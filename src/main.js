@@ -67,7 +67,7 @@ for(let r=0;r<10;r++)for(let c=0;c<10;c++){
  cell.addEventListener('click',()=>{const selected=document.querySelector('.card.selected');if(selected)place(selected.dataset.id,r,c)});board.appendChild(cell);
 }
 for(const [z,[r,c]] of Object.entries(labels)){const lab=document.createElement('span');lab.className='zoneLabel';lab.textContent=zoneNames[z];cellAt(r,c).appendChild(lab)}
-function makeToken(p){const t=document.createElement('div');t.className='token';t.dataset.id=p.id;t.draggable=true;t.innerHTML=`<span>${p.icon}</span><b>${p.name}</b>`;t.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',p.id));t.ondblclick=()=>returnToCard(p.id);return t}
+function makeToken(p){const t=document.createElement('div');t.className='token';t.dataset.id=p.id;t.draggable=true;const tokenIcon=p.id==='carmen'?'👵🏻':p.icon;t.innerHTML=`<span>${tokenIcon}</span><b>${p.name}</b>`;t.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',p.id));t.ondblclick=()=>returnToCard(p.id);return t}
 function makeCard(p){const d=document.createElement('article');d.className='card'+(p.id==='silvia'?' locked':'');d.dataset.id=p.id;d.innerHTML=`<div class="portrait">${p.icon}</div><div class="cardText"><b>${p.name}${p.id==='silvia'?' 🔒':''}</b><small>${p.clue}</small></div>`;d.addEventListener('click',()=>{if(d.classList.contains('locked'))return;document.querySelectorAll('.card').forEach(x=>x.classList.remove('selected'));d.classList.add('selected')});return d}
 people.forEach(p=>{const card=makeCard(p);card.appendChild(makeToken(p));cards.appendChild(card)});
 function updateExclusions(){
