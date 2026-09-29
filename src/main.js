@@ -4,7 +4,7 @@ const stories = [
   { id:'historia1', label:'O teu lugar', unlock:[2026,8,29] },
   { id:'historia2', label:'O traballo', unlock:[2026,8,30] },
   { id:'historia3', label:'O medo', unlock:[2026,9,1] },
-  { id:'historia4', label:'As decisións', unlock:[2026,9,2] },
+  { id:'historia4', label:'Silvias', unlock:[2026,9,2] },
   { id:'historia5', label:'O que queda', unlock:[2026,9,3] },
   { id:'historia6', label:'O que vén', unlock:[2026,9,4] },
   { id:'historia7', label:'A felicidade', unlock:[2026,9,5] }
@@ -24,6 +24,14 @@ function storyIsAvailable(story){
   }
   const [y,m,d] = story.unlock;
   return today >= new Date(y,m,d);
+}
+function visibleStoryCount(){
+  const unlocked = stories.filter(storyIsAvailable).length;
+  return Math.min(stories.length, unlocked + (unlocked < stories.length ? 1 : 0));
+}
+function storyDate(story){
+  const [y,m,d]=story.unlock;
+  return `${String(d).padStart(2,'0')}/${String(m+1).padStart(2,'0')}/${y}`;
 }
 let activeStory='historia1';
 
@@ -108,7 +116,7 @@ const workPassableDecor=workVans;
 const general=`Hai exactamente <b>un personaxe en cada fila e un en cada columna</b>. Cada casilla pertence a unha única zona. Unha zona pode ter unha, varias ou ningunha persoa. Os elementos do escenario ocupan a súa casilla e non se poden tapar.`;
 
 document.querySelector('#app').innerHTML=`
-<nav class="storyTabs" aria-label="Historias">${stories.map((story,i)=>`<button id="${story.id}" class="storyTab ${i===0?'active':''}" data-story="${story.id}"${storyIsAvailable(story)?'': ' style="display:none"'}>${story.label}</button>`).join('')}</nav>
+<nav class="storyTabs" aria-label="Historias">${stories.map((story,i)=>`<button id="${story.id}" class="storyTab ${i===0?'active':''}" data-story="${story.id}"${i < visibleStoryCount() ? '' : ' style="display:none"'}${storyIsAvailable(story)?'':' data-locked="true"'}>${story.label}</button>`).join('')}</nav>
 <div id="storyContent">
 <header class="hero"><div><span class="eyebrow">EXPEDIENTE 10×10</span><h1>MURDOKU</h1><p>O teu lugar</p></div><button id="rulesBtn" class="ghost">Como xogar</button></header>
 <div class="game">
@@ -303,24 +311,47 @@ function unlockSilvia(){const card=cards.querySelector('[data-id="silvia"]');if(
 function check(){if(checkBtn.disabled)return;let correctOthers=0;document.querySelectorAll('.board .token').forEach(t=>t.classList.remove('good','bad'));for(const [id,pos]of Object.entries(placements)){const t=document.querySelector(`.board .token[data-id="${id}"]`),sol=solution[id],ok=sol&&sol[0]===pos[0]&&sol[1]===pos[1]&&!conflicts(id,pos);t?.classList.add(ok?'good':'bad');if(ok&&id!=='silvia')correctOthers++}const s=placements.silvia;if(s&&s[0]===solution.silvia[0]&&s[1]===solution.silvia[1]&&!conflicts('silvia',s)){status.innerHTML='🌅 <b>CASO RESOLTO.</b> Todo está no seu lugar.';document.body.classList.add('solved');checkBtn.disabled=true;return}status.textContent=`${correctOthers}/9 posicións previas correctas. Verde = ben; vermello = revisa.`}
 checkBtn.onclick=check;document.querySelector('#reset').onclick=()=>location.reload();const dlg=document.querySelector('#rules');document.querySelector('#rulesBtn').onclick=()=>dlg.showModal();document.querySelector('#closeRules').onclick=()=>dlg.close();
 const storyContent=document.querySelector('#storyContent');
-document.querySelectorAll('.storyTab').forEach(btn=>btn.addEventListener('click',()=>{
-  document.querySelectorAll('.storyTab').forEach(x=>x.classList.toggle('active',x===btn));
-  activeStory=btn.dataset.story;
-  if(activeStory==='historia1'){
+function renderStoryById(storyId, title){
+  if(storyId==='historia1'){
     location.reload();
-  } else if(activeStory==='historia2'){
+  } else if(storyId==='historia2'){
     renderWorkStory();
-  } else if(activeStory==='historia3'){
+  } else if(storyId==='historia3'){
     renderFearStory();
-  } else if(activeStory==='historia4'){
+  } else if(storyId==='historia4'){
     renderDecisionStory();
   } else {
     storyContent.classList.add('storyPlaceholder');
-    storyContent.querySelector('.game').style.display='none';
-    storyContent.querySelector('.hero').style.display='none';
+    const game=storyContent.querySelector('.game'); if(game) game.style.display='none';
+    const hero=storyContent.querySelector('.hero'); if(hero) hero.style.display='none';
     let ph=storyContent.querySelector('.comingSoon');
     if(!ph){ph=document.createElement('section');ph.className='comingSoon';storyContent.appendChild(ph)}
-    ph.innerHTML=`<span>PRÓXIMO EXPEDIENTE</span><h2>${btn.textContent}</h2><p>Aquí irá un novo Sildoku coa súa propia historia, personaxes, pistas e taboleiro.</p>`;
+    ph.innerHTML=`<span>PRÓXIMO EXPEDIENTE</span><h2>${title}</h2><p>Aquí irá un novo Sildoku coa súa propia historia, personaxes, pistas e taboleiro.</p>`;
   }
+}
+function showLockedStory(story){
+  // Debuxa o expediente por detrás cando xa existe, pero queda practicamente oculto.
+  if(story.id==='historia2') renderWorkStory();
+  else if(story.id==='historia3') renderFearStory();
+  else if(story.id==='historia4') renderDecisionStory();
+  else {
+    storyContent.classList.add('storyPlaceholder');
+    storyContent.innerHTML=`<section class="comingSoon lockedPreviewDummy"><span>EXPEDIENTE PECHADO</span><h2>${story.label}</h2><p>O contido aparecerá cando chegue o seu día.</p></section>`;
+  }
+  storyContent.classList.add('lockedStoryPreview');
+  const overlay=document.createElement('div');
+  overlay.className='lockedDateOverlay';
+  overlay.innerHTML=`<div class="lockedDateCard"><span>DISPOÑIBLE O</span><strong>${storyDate(story)}</strong><small>ás 00:00</small></div>`;
+  storyContent.appendChild(overlay);
+}
+document.querySelectorAll('.storyTab').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('.storyTab').forEach(x=>x.classList.toggle('active',x===btn));
+  activeStory=btn.dataset.story;
+  const story=stories.find(s=>s.id===activeStory);
+  if(!storyIsAvailable(story)){
+    showLockedStory(story);
+    return;
+  }
+  renderStoryById(activeStory, btn.textContent);
 }));
 updateCheckState();
