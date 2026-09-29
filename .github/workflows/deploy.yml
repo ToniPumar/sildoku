@@ -1,4 +1,4 @@
-name: Deploy Murdoku to GitHub Pages
+name: Deploy Murdoku tdo GitHub Pages
 
 on:
   push:
