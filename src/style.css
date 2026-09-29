@@ -7,10 +7,40 @@
 .cell.zone-praia.sea{background:linear-gradient(180deg,#66c5df 0%,#4eb4d2 48%,#2d9fc2 100%)!important;position:relative}
 .cell.zone-praia.sea::before{content:"";position:absolute;left:0;top:0;bottom:0;width:7px;background:linear-gradient(90deg,rgba(255,255,255,.9),rgba(255,255,255,.12));opacity:.85}
 .sun-in-cell{font-size:2.35rem!important;filter:drop-shadow(0 0 10px rgba(255,177,45,.9));z-index:3}
-.cell[data-r="8"][data-c="9"]{background:linear-gradient(180deg,#f7a95c 0 22%,#f7d47d 23% 34%,#65c6df 35% 100%)!important}
-.cell[data-r="8"][data-c="9"]::before{display:none}
+#board .cell[data-r="8"][data-c="9"]{background:linear-gradient(180deg,#f7a95c 0 22%,#f7d47d 23% 34%,#65c6df 35% 100%)!important}
+#board .cell[data-r="8"][data-c="9"]::before{display:none}
 
 /* V7: sol debuxado con CSS sobre a mesma auga azul ca H10/J10 */
 .sun-in-cell{position:absolute!important;inset:0!important;display:block!important;transform:none!important;font-size:0!important;filter:none!important;z-index:3;overflow:hidden;pointer-events:none}
 .sun-disc{position:absolute;left:50%;top:34%;width:42%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle at 42% 38%,#fffbd0 0 12%,#ffe66c 30%,#ffbd3f 62%,#f28b2e 100%);box-shadow:0 0 8px rgba(255,221,94,.95),0 0 18px rgba(255,172,48,.75);}
 .sun-reflection{position:absolute;left:50%;top:58%;width:50%;height:34%;transform:translateX(-50%);background:repeating-linear-gradient(to bottom,rgba(255,232,129,.92) 0 2px,transparent 2px 6px);clip-path:polygon(43% 0,57% 0,100% 100%,0 100%);opacity:.9;}
+
+/* V9: selector de sete historias */
+.storyTabs{display:flex;gap:8px;align-items:center;padding:10px 14px;background:#211d18;border-bottom:1px solid #51483f;overflow-x:auto;scrollbar-width:thin}
+.storyTab{flex:0 0 auto;min-height:38px;padding:8px 14px;border:1px solid #746759;background:#342e28;color:#e9e0d4;border-radius:9px;font:700 12px Georgia,serif;white-space:nowrap}
+.storyTab:hover{background:#443b33}.storyTab.active{background:#f3e6ca;color:#2b241e;border-color:#d8bd8f;box-shadow:inset 0 -3px 0 #9c6d35}
+.comingSoon{max-width:760px;margin:70px auto;padding:55px 30px;text-align:center;background:#faf7f0;border:1px solid #c9bca9;border-radius:18px;box-shadow:0 14px 35px #3a2b1f20}
+.comingSoon span{font-size:10px;letter-spacing:.2em;color:#8b725c}.comingSoon h2{font:700 34px Georgia,serif;margin:10px 0}.comingSoon p{color:#766b60}
+@media(max-width:1050px){.storyTabs{position:sticky;top:0;z-index:20}.storyPlaceholder .comingSoon{margin:30px 10px}.storyPlaceholder .hero{display:none!important}}
+/* Historia 2 · O traballo */
+.work-conta{background:#dceaf2}.work-desp{background:#e9dfd1}.work-com{background:#e6e0f0}.work-cafe{background:#f2dfbd}.work-arquivo{background:#dedbd2}.work-paso{background:#e8e8e4}.work-parking{background:#cfd4d6}.work-carga{background:#e7d4a7}
+.workBoard .work-parking:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 72%,rgba(255,255,255,.32) 72% 76%,transparent 76% 100%);pointer-events:none}
+.workBoard .work-carga{background:#e7d4a7}
+.workBoard .work-carga:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(117,89,43,.08),rgba(255,255,255,.05));pointer-events:none}
+.trapCard{border-style:dashed!important}.trapCard .portrait{filter:grayscale(.25)}
+.workToast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,18px);background:#20211f;color:white;padding:12px 18px;border-radius:999px;font-weight:800;opacity:0;pointer-events:none;transition:.2s;z-index:50;box-shadow:0 8px 24px #0004}.workToast.show{opacity:1;transform:translate(-50%,0)}
+/* Historia 2: lectura máis clara do interior/exterior e furgoneta ocupable */
+.workGeneral{border-left:4px solid #496a76}.workKey{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.workKey span{font:800 9px/1 system-ui,sans-serif;letter-spacing:.08em;padding:6px 8px;border:1px solid #b9aa91;border-radius:999px;background:#fffaf2}.workBoard .vehicleSeat{cursor:pointer}.workBoard .vehicleSeat .object{opacity:1;transform:none;filter:drop-shadow(0 2px 1px #0002)}.workBoard .vehicleSeat .token{position:relative;z-index:7}
+
+/* V14: as texturas de exterior/carga van por ::before para non tapar as X de exclusión */
+.workBoard .work-parking::after,
+.workBoard .work-carga::after{background:none!important;content:none!important}
+.workBoard .work-parking::before{content:"";position:absolute;inset:0;z-index:0;background:repeating-linear-gradient(90deg,transparent 0 72%,rgba(255,255,255,.32) 72% 76%,transparent 76% 100%);pointer-events:none}
+.workBoard .work-carga::before{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(0deg,rgba(117,89,43,.08),rgba(255,255,255,.05));pointer-events:none}
+.workBoard .work-parking .object,
+.workBoard .work-carga .object,
+.workBoard .work-parking .zoneLabel,
+.workBoard .work-carga .zoneLabel{z-index:2}
+.workBoard .cell.excluded::after{content:"×"!important;position:absolute!important;inset:0!important;display:flex!important;align-items:center!important;justify-content:center!important;z-index:8!important;background:transparent!important;font:700 clamp(18px,2.1vw,30px) Georgia,serif!important;color:#4d463f88!important;pointer-events:none!important}
+.workBoard .cell.excluded .object{opacity:.58}
+.workBoard .cell.excluded.vehicleSeat .object{opacity:.58}
