@@ -10,9 +10,18 @@ const stories = [
   { id:'historia7', label:'A felicidade', unlock:[2026,9,5] }
 ];
 // Desbloqueo acumulativo usando a data local do dispositivo.
-// new Date(ano, mes-1, día) representa as 00:00 locais dese día.
+// Para probas: engade ?proba=3 (ou 1..7) á URL para mostrar ata esa historia.
+// Sen ?proba=, Silvia verá exclusivamente o que corresponda pola data real.
 const today = new Date();
+const probaParam = Number.parseInt(new URLSearchParams(window.location.search).get('proba') || '', 10);
+const proba = Number.isInteger(probaParam) && probaParam >= 1 && probaParam <= stories.length
+  ? probaParam
+  : null;
+
 function storyIsAvailable(story){
+  if (proba !== null) {
+    return stories.findIndex(s => s.id === story.id) < proba;
+  }
   const [y,m,d] = story.unlock;
   return today >= new Date(y,m,d);
 }
@@ -170,6 +179,56 @@ function renderWorkStory(){
  document.querySelector('#wreset').onclick=()=>renderWorkStory();state();
 }
 
+
+
+// Historia 3 · O medo. Un mapa simbólico: lugares escuros que van abrindo cara a O Claro.
+const fearPeople=[
+ {id:'medo',name:'Medo',icon:'🌑',clue:'Está na Casa das Portas Pechadas, na fila A. Dúbida queda máis abaixo e á súa esquerda.'},
+ {id:'dubida',name:'Dúbida',icon:'❓',clue:'Perdeuse no Bosque sen Saída, na columna 3.'},
+ {id:'tristeza',name:'Tristeza',icon:'🌧️',clue:'Está na Praza da Choiva, na columna 2.'},
+ {id:'soidade',name:'Soidade',icon:'🌙',clue:'Agarda na Estación Baleira, na columna 1.'},
+ {id:'pasado',name:'Pasado',icon:'🕰️',clue:'Está nunha esquina da súa zona.'},
+ {id:'incerteza',name:'Incerteza',icon:'🌫️',clue:'Está na diagonal de Pasado, pero noutra zona.'},
+ {id:'calma',name:'Calma',icon:'🍃',clue:'Está ao lado dun trevo.'},
+ {id:'carino',name:'Cariño',icon:'🤍',clue:'Non está nin na primeira nin na última columna.'},
+ {id:'valentia',name:'Valentía',icon:'✨',clue:'Está na fila anterior á do sentimento que queda por desbloquear.'},
+ {id:'fsilvia',name:'Silvia',icon:'👩🏻',clue:'Na súa zona están tamén tres cousas que forman parte dela: Calma, Cariño e Valentía.',locked:true}
+];
+const FZ=[
+ ['estacion','estacion','bosque','bosque','bosque','portas','portas','portas','portas','portas'],
+ ['estacion','estacion','bosque','bosque','bosque','portas','portas','portas','portas','portas'],
+ ['estacion','choiva','choiva','bosque','bosque','portas','portas','portas','portas','portas'],
+ ['estacion','choiva','choiva','choiva','choiva','pasillo','pasillo','portas','portas','portas'],
+ ['calella','calella','choiva','calella','choiva','pasillo','pasillo','pasillo','ponte','ponte'],
+ ['calella','calella','calella','calella','ponte','pasillo','ponte','ponte','ponte','ponte'],
+ ['calella','calella','calella','ponte','ponte','ponte','ponte','ponte','claro','claro'],
+ ['calella','calella','ponte','ponte','ponte','claro','claro','claro','claro','claro'],
+ ['calella','ponte','ponte','ponte','claro','claro','claro','claro','claro','claro'],
+ ['ponte','ponte','ponte','claro','claro','claro','claro','claro','claro','claro']
+];
+const fearZoneNames={estacion:'ESTACIÓN BALEIRA',bosque:'BOSQUE SEN SAÍDA',portas:'CASA DAS PORTAS PECHADAS',choiva:'PRAZA DA CHOIVA',calella:'CALELLA DO ESQUECEMENTO',pasillo:'PASILLO MISTERIOSO',ponte:'PONTE DO DESCOÑECIDO',claro:'O CLARO'};
+const fearLabels={estacion:[0,0],bosque:[0,2],portas:[0,5],choiva:[2,1],calella:[4,0],pasillo:[3,5],ponte:[4,8],claro:[6,8]};
+const fearSolution={medo:[0,5],dubida:[1,2],tristeza:[2,1],soidade:[3,0],pasado:[4,3],incerteza:[5,4],calma:[6,9],carino:[7,8],valentia:[8,7],fsilvia:[9,6]};
+const fearObjects={'0,1':'🪑','0,4':'🌲','0,9':'🚪','1,0':'💡','1,4':'🌲','1,6':'🪟','2,3':'🌲','2,6':'🚪','3,2':'☔','3,7':'🔒','4,2':'🕯️','4,9':'🌁','5,0':'🍂','5,7':'🌁','6,1':'🍂','6,5':'🌉','7,3':'🌉','7,9':'🍀','8,2':'🌉','8,8':'🌼','9,0':'🌉','9,7':'🦋','9,9':'🌿'};
+
+function renderFearStory(){
+ storyContent.classList.remove('storyPlaceholder');
+ storyContent.innerHTML=`<header class="hero fearHero"><div><span class="eyebrow">EXPEDIENTE 10×10 · HISTORIA 3</span><h1>SILDOKU</h1><p>O medo</p></div></header><div class="game fearGame"><aside class="leftPanel panel fearPanel"><h2>O QUE HABITA AQUÍ</h2><p class="muted">Non son persoas. Son cousas que ás veces nos acompañan.</p><div id="fcards" class="cards"></div></aside><main class="center"><div class="boardShell"><div class="colCoords">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<span>${n}</span>`).join('')}</div><div class="boardLine"><div class="rowCoords">${'ABCDEFGHIJ'.split('').map(x=>`<span>${x}</span>`).join('')}</div><div id="fboard" class="board fearBoard"></div></div></div><div class="fearLegend">Da néboa á luz · todo forma parte do mesmo mapa.</div></main><aside class="rightPanel panel fearPanel"><section class="general fearGeneral"><h2>PISTA XERAL</h2><p>Hai lugares polos que ás veces toca pasar. Uns pesan, outros doen e outros simplemente asustan porque non sabemos que hai detrás. <b>Coloca cada cousa no seu lugar.</b></p><p class="fearRule">Unha ficha por fila e unha por columna.</p></section><div id="fstatus" class="status">Coloca as nove fichas dispoñibles.</div><div class="actions"><button id="fcheck" class="primary" disabled>🔎 COMPROBAR</button><button id="freset" class="secondary">↻ LIMPAR</button></div></aside></div>`;
+ const fb=document.querySelector('#fboard'),fc=document.querySelector('#fcards'),fs=document.querySelector('#fstatus'),fcheck=document.querySelector('#fcheck');
+ const fp={}; const fblocked=new Set(Object.keys(fearObjects)); const fat=(r,c)=>fb.children[r*10+c];
+ function fedges(r,c){const z=FZ[r][c],a=[];if(r===0||FZ[r-1][c]!==z)a.push('zt');if(r===9||FZ[r+1][c]!==z)a.push('zb');if(c===0||FZ[r][c-1]!==z)a.push('zl');if(c===9||FZ[r][c+1]!==z)a.push('zr');return a.join(' ')}
+ for(let r=0;r<10;r++)for(let c=0;c<10;c++){const ce=document.createElement('div');ce.className=`cell fear-${FZ[r][c]} ${fedges(r,c)}`;ce.dataset.r=r;ce.dataset.c=c;if(fearObjects[`${r},${c}`]){ce.classList.add('blocked');ce.innerHTML=`<span class="object">${fearObjects[`${r},${c}`]}</span>`}ce.addEventListener('dragover',e=>{if(!fblocked.has(`${r},${c}`))e.preventDefault()});ce.addEventListener('drop',e=>{e.preventDefault();fplace(e.dataTransfer.getData('text/plain'),r,c)});ce.addEventListener('click',()=>{const sel=fc.querySelector('.card.selected');if(sel)fplace(sel.dataset.id,r,c)});fb.appendChild(ce)}
+ for(const [z,[r,c]] of Object.entries(fearLabels)){const l=document.createElement('span');l.className='zoneLabel fearZoneLabel';l.textContent=fearZoneNames[z];fat(r,c).appendChild(l)}
+ function ftoken(p){const t=document.createElement('div');t.className='token fearToken';t.dataset.id=p.id;t.draggable=true;t.innerHTML=`<span>${p.icon}</span><b>${p.name}</b>`;t.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',p.id));t.ondblclick=()=>freturn(p.id);return t}
+ fearPeople.forEach(p=>{const d=document.createElement('article');d.className='card fearCard'+(p.locked?' locked':'');d.dataset.id=p.id;d.innerHTML=`<div class="portrait">${p.locked?'🔒':p.icon}</div><div class="cardText"><b>${p.locked?'???':p.name}</b><small>${p.locked?'Coloca primeiro as outras nove fichas.':p.clue}</small></div>`;d.addEventListener('click',()=>{if(d.classList.contains('locked'))return;fc.querySelectorAll('.card').forEach(x=>x.classList.remove('selected'));d.classList.add('selected')});if(!p.locked)d.appendChild(ftoken(p));fc.appendChild(d)});
+ function fx(){fb.querySelectorAll('.cell').forEach(x=>x.classList.remove('excluded'));const rs=new Set(),cs=new Set();Object.values(fp).forEach(([r,c])=>{rs.add(r);cs.add(c)});fb.querySelectorAll('.cell').forEach(x=>{const r=+x.dataset.r,c=+x.dataset.c;if((rs.has(r)||cs.has(c))&&!x.querySelector('.token'))x.classList.add('excluded')})}
+ function freturn(id){const p=fearPeople.find(x=>x.id===id),card=fc.querySelector(`[data-id="${id}"]`);fb.querySelectorAll(`.token[data-id="${id}"]`).forEach(t=>t.remove());if(!card.classList.contains('locked'))card.appendChild(ftoken(p));delete fp[id];fx();fstate()}
+ function fplace(id,r,c){const p=fearPeople.find(x=>x.id===id),card=fc.querySelector(`[data-id="${id}"]`);if(!p||!card||card.classList.contains('locked')||fblocked.has(`${r},${c}`))return;for(const [o,[rr,cc]] of Object.entries(fp))if(o!==id&&(rr===r||cc===c))return;const target=fat(r,c);if(target.querySelector('.token')&&target.querySelector('.token').dataset.id!==id)return;fb.querySelectorAll(`.token[data-id="${id}"]`).forEach(t=>t.remove());target.appendChild(ftoken(p));fp[id]=[r,c];card.classList.remove('selected');fx();fstate()}
+ function fstate(){const first=fearPeople.filter(p=>p.id!=='fsilvia').filter(p=>fp[p.id]).length,sc=fc.querySelector('[data-id="fsilvia"]');if(first===9&&sc.classList.contains('locked')){sc.classList.remove('locked');sc.querySelector('.portrait').textContent='👩🏻';sc.querySelector('.cardText b').textContent='Silvia';sc.querySelector('.cardText small').textContent='Na súa zona están tamén tres cousas que forman parte dela: Calma, Cariño e Valentía.';sc.appendChild(ftoken(fearPeople.find(p=>p.id==='fsilvia')))}const unlocked=!sc.classList.contains('locked'),total=Object.keys(fp).length;fcheck.disabled=!(unlocked&&total===10);if(!unlocked)fs.textContent=`${first}/9 fichas colocadas. A última aparecerá cando atopes sitio para as demais.`;else if(!fp.fsilvia)fs.innerHTML='🌤️ <b>Silvia está desbloqueada.</b> Agora tamén hai un lugar para ela.';else fs.textContent='As 10 fichas están colocadas. Xa podes comprobar.'}
+ fcheck.onclick=()=>{let good=0;fb.querySelectorAll('.token').forEach(t=>{t.classList.remove('good','bad');const a=fp[t.dataset.id],b=fearSolution[t.dataset.id],ok=b&&a[0]===b[0]&&a[1]===b[1];t.classList.add(ok?'good':'bad');if(ok)good++});fs.innerHTML=good===10?'🦋 <b>CASO RESOLTO.</b> Hai cousas que sentimos. Ningunha delas nos define.':`${good}/10 posicións correctas. Verde = ben; vermello = revisa.`};
+ document.querySelector('#freset').onclick=()=>renderFearStory();fstate();
+}
+
 function unlockedIds(){return people.filter(p=>!cards.querySelector(`[data-id="${p.id}"]`).classList.contains('locked')).map(p=>p.id)}
 function updateCheckState(){
  const silviaCard=cards.querySelector('[data-id="silvia"]');
@@ -202,6 +261,8 @@ document.querySelectorAll('.storyTab').forEach(btn=>btn.addEventListener('click'
     location.reload();
   } else if(activeStory==='historia2'){
     renderWorkStory();
+  } else if(activeStory==='historia3'){
+    renderFearStory();
   } else {
     storyContent.classList.add('storyPlaceholder');
     storyContent.querySelector('.game').style.display='none';

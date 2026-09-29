@@ -44,3 +44,15 @@
 .workBoard .cell.excluded::after{content:"×"!important;position:absolute!important;inset:0!important;display:flex!important;align-items:center!important;justify-content:center!important;z-index:8!important;background:transparent!important;font:700 clamp(18px,2.1vw,30px) Georgia,serif!important;color:#4d463f88!important;pointer-events:none!important}
 .workBoard .cell.excluded .object{opacity:.58}
 .workBoard .cell.excluded.vehicleSeat .object{opacity:.58}
+
+/* Historia 3 · O medo: da néboa á luz */
+.fearHero{background:linear-gradient(90deg,#25282b,#4a4d49 55%,#d8d5bd);color:#f3eee5;border-color:#464845}.fearHero .eyebrow{color:#c6bfb5}.fearPanel{background:#f1efe8;border-color:#aaa79d}.fearGeneral{background:linear-gradient(135deg,#deddd8,#eee8d8);border-color:#aaa598;border-left:4px solid #696d68}.fearRule{margin-top:9px!important;font-size:11px!important;color:#5f605c}.fearLegend{margin-top:9px;font:italic 11px Georgia,serif;color:#6d6a61}.fearBoard{background:#25292a;box-shadow:0 14px 34px #1118}.fear-estacion{background:linear-gradient(145deg,#555b5c,#3d4446)}.fear-bosque{background:radial-gradient(circle at 30% 30%,#526052 0 8%,transparent 9%),linear-gradient(145deg,#3f4b42,#29342f)}.fear-portas{background:linear-gradient(145deg,#554b49,#332e30)}.fear-choiva{background:linear-gradient(145deg,#657079,#46535d)}.fear-calella{background:linear-gradient(145deg,#70665f,#4e4845)}.fear-pasillo{background:linear-gradient(145deg,#5f5b58,#454240)}.fear-ponte{background:linear-gradient(135deg,#697474,#89918b)}.fear-claro{background:radial-gradient(circle at 70% 25%,#fff7c477 0 10%,transparent 30%),linear-gradient(145deg,#c9d8b0,#e8dfad)}.fearBoard .cell{color:#eee}.fearBoard .fear-claro{color:#302f28}.fearZoneLabel{background:#252825dc;color:#f0ece3;border-color:#aaa;font-size:clamp(5.5px,.58vw,8px)}.fear-claro .fearZoneLabel{background:#fff8d9e8;color:#39362c;border-color:#777052}.fearCard{background:#f5f2eb}.fearCard.locked{background:#d8d6d0}.fearToken{background:#eeeae0;border-color:#4d504c}.fearBoard .fear-claro .fearToken{background:#fffbe9;border-color:#6f795a}.fearBoard .cell.excluded::after{color:#f3eee477}.fearBoard .fear-claro.excluded::after{color:#4b493c66}
+
+/* V19 · O medo: taboleiro estable e etiquetas sempre lexibles */
+.fearBoard{min-width:0;min-height:0}
+.fearBoard .cell{min-width:0;min-height:0;overflow:visible}
+.fearBoard .fearToken{position:absolute;inset:9%;width:auto;height:auto;min-width:0;min-height:0;max-width:82%;max-height:82%;margin:auto}
+.fearBoard .fearToken b{display:block;width:88%;min-width:0;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fearBoard .fearZoneLabel{z-index:20;max-width:none;white-space:nowrap;line-height:1;box-shadow:0 1px 3px #0005}
+.fearBoard .cell:has(.fearZoneLabel) .fearToken{z-index:5}
+@media(max-width:620px){.fearBoard .fearZoneLabel{font-size:5px;max-width:none;white-space:nowrap;padding:1px 2px}.fearBoard .fearToken{inset:11%;max-width:78%;max-height:78%}}
