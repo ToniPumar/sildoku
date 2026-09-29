@@ -229,6 +229,55 @@ function renderFearStory(){
  document.querySelector('#freset').onclick=()=>renderFearStory();fstate();
 }
 
+
+
+// Historia 4 · As decisións. Dez Silvias, sete lugares e unha última versión por descubrir.
+const decisionPeople=[
+ {id:'timida',name:'Silvia Tímida',icon:'🌸',clue:'Está cos Amigos, na primeira fila. Non ocupa unha esquina do taboleiro.'},
+ {id:'divertida',name:'Silvia Divertida',icon:'😄',clue:'Comparte zona con Silvia Tímida e está máis abaixo e á súa dereita.'},
+ {id:'bailadora',name:'Silvia Bailadora',icon:'💃',clue:'Está no medio e medio do Tablao.'},
+ {id:'independente',name:'Silvia Independente',icon:'🔑',clue:'Está no Piso e ocupa a primeira columna.'},
+ {id:'pensativa',name:'Silvia Pensativa',icon:'💭',clue:'Comparte o Piso con Silvia Independente, pero non comparte nin fila nin columna con ela.'},
+ {id:'carinosa4',name:'Silvia Cariñosa',icon:'🤍',clue:'Está na segunda fila de onde máis cariño dou.'},
+ {id:'sentimental',name:'Silvia Sentimental',icon:'🦋',clue:'Está ao lado dunha bolboreta.'},
+ {id:'forte',name:'Silvia Forte',icon:'🛡️',clue:'Está coa Familia e é a que queda máis á dereita de todas as Silvias dispoñibles.'},
+ {id:'chora',name:'Silvia que Chora',icon:'🌧️',clue:'Está na Habitación da Choiva. Chorar tamén é unha forma de soltar o que pesa.'},
+ {id:'futuro',name:'Silvia do Futuro',icon:'👑',clue:'O seu lugar é O Trono. É a Silvia que conquistou os seus medos sen deixar de ser ningunha das anteriores.',locked:true}
+];
+const DZ=[
+ ['amigos','amigos','amigos','amigos','amigos','tablao','tablao','tablao','tablao','tablao'],
+ ['amigos','amigos','amigos','amigos','amigos','tablao','tablao','tablao','tablao','tablao'],
+ ['amigos','amigos','amigos','piso','piso','tablao','tablao','tablao','tablao','tablao'],
+ ['piso','piso','piso','piso','piso','piso','tablao','tablao','tablao','tablao'],
+ ['piso','piso','piso','piso','piso','piso','avoa','avoa','familia','familia'],
+ ['avoa','avoa','avoa','avoa','avoa','avoa','avoa','avoa','familia','familia'],
+ ['avoa','avoa','avoa','avoa','avoa','avoa','avoa','avoa','familia','familia'],
+ ['choiva','choiva','choiva','choiva','choiva','familia','familia','familia','familia','familia'],
+ ['choiva','choiva','choiva','choiva','choiva','choiva','choiva','choiva','choiva','choiva'],
+ ['choiva','choiva','choiva','choiva','choiva','choiva','trono','trono','trono','trono']
+];
+const decisionZoneNames={amigos:'OS AMIGOS',tablao:'O TABLAO',piso:'O PISO',avoa:'CASA DA AVOA',familia:'A FAMILIA',choiva:'HABITACIÓN DA CHOIVA',trono:'O TRONO'};
+const decisionLabels={amigos:[0,0],tablao:[0,5],piso:[2,3],avoa:[5,0],familia:[4,8],choiva:[8,0],trono:[9,6]};
+const decisionSolution={timida:[0,1],divertida:[1,2],bailadora:[2,7],independente:[3,0],pensativa:[4,4],carinosa4:[5,3],sentimental:[6,5],forte:[7,9],chora:[8,8],futuro:[9,6]};
+const decisionObjects={'0,3':'🫂','0,8':'🎵','1,5':'🎸','1,9':'🎤','2,6':'🪭','2,9':'🎶','3,2':'🛋️','3,5':'🔑','4,1':'📦','4,7':'🏡','5,4':'🪑','5,6':'🦋','6,1':'🕯️','6,6':'🦋','7,5':'❤️','7,7':'🏠','8,2':'🪟','8,6':'💧','9,7':'🏛️','9,9':'👑'};
+
+function renderDecisionStory(){
+ storyContent.classList.remove('storyPlaceholder');
+ storyContent.innerHTML=`<header class="hero decisionHero"><div><span class="eyebrow">EXPEDIENTE 10×10 · HISTORIA 4</span><h1>SILDOKU</h1><p>As decisións</p></div></header><div class="game decisionGame"><aside class="leftPanel panel decisionPanel"><h2>CANTAS SILVIAS HAI?</h2><p class="muted">A mesma persoa, moitas maneiras de estar no mundo.</p><div id="dcards" class="cards"></div></aside><main class="center"><div class="boardShell"><div class="colCoords">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<span>${n}</span>`).join('')}</div><div class="boardLine"><div class="rowCoords">${'ABCDEFGHIJ'.split('').map(x=>`<span>${x}</span>`).join('')}</div><div id="dboard" class="board decisionBoard"></div></div></div><div class="decisionLegend">Todas foron, son ou poden ser parte da mesma Silvia.</div></main><aside class="rightPanel panel decisionPanel"><section class="general decisionGeneral"><h2>PISTA XERAL</h2><p><b>Cantas Silvias pode haber dentro dunha mesma Silvia?</b> Algunhas rin, outras bailan, outras pensan e outras choran. Todas forman parte da mesma historia. Coloca cada Silvia no seu lugar.</p><p class="decisionRule">Unha Silvia por fila e unha por columna.</p></section><div id="dstatus" class="status">Coloca as nove Silvias dispoñibles.</div><div class="actions"><button id="dcheck" class="primary" disabled>🔎 COMPROBAR</button><button id="dreset" class="secondary">↻ LIMPAR</button></div></aside></div>`;
+ const db=document.querySelector('#dboard'),dc=document.querySelector('#dcards'),ds=document.querySelector('#dstatus'),dcheck=document.querySelector('#dcheck'); const dp={}; const dat=(r,c)=>db.children[r*10+c];
+ function dedges(r,c){const z=DZ[r][c],a=[];if(r===0||DZ[r-1][c]!==z)a.push('zt');if(r===9||DZ[r+1][c]!==z)a.push('zb');if(c===0||DZ[r][c-1]!==z)a.push('zl');if(c===9||DZ[r][c+1]!==z)a.push('zr');return a.join(' ')}
+ for(let r=0;r<10;r++)for(let c=0;c<10;c++){const ce=document.createElement('div');ce.className=`cell decision-${DZ[r][c]} ${dedges(r,c)}`;ce.dataset.r=r;ce.dataset.c=c;if(decisionObjects[`${r},${c}`])ce.innerHTML=`<span class="object decisionObject">${decisionObjects[`${r},${c}`]}</span>`;ce.addEventListener('dragover',e=>e.preventDefault());ce.addEventListener('drop',e=>{e.preventDefault();dplace(e.dataTransfer.getData('text/plain'),r,c)});ce.addEventListener('click',()=>{const sel=dc.querySelector('.card.selected');if(sel)dplace(sel.dataset.id,r,c)});db.appendChild(ce)}
+ for(const [z,[r,c]] of Object.entries(decisionLabels)){const l=document.createElement('span');l.className='zoneLabel decisionZoneLabel';l.textContent=decisionZoneNames[z];dat(r,c).appendChild(l)}
+ function dtoken(p){const t=document.createElement('div');t.className='token decisionToken';t.dataset.id=p.id;t.draggable=true;t.innerHTML=`<span>${p.icon}</span><b>${p.name.replace('Silvia ','')}</b>`;t.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',p.id));t.ondblclick=()=>dreturn(p.id);return t}
+ decisionPeople.forEach(p=>{const d=document.createElement('article');d.className='card decisionCard'+(p.locked?' locked':'');d.dataset.id=p.id;d.innerHTML=`<div class="portrait">${p.locked?'🔒':p.icon}</div><div class="cardText"><b>${p.locked?'???':p.name}</b><small>${p.locked?'Coloca primeiro as outras nove Silvias.':p.clue}</small></div>`;d.addEventListener('click',()=>{if(d.classList.contains('locked'))return;dc.querySelectorAll('.card').forEach(x=>x.classList.remove('selected'));d.classList.add('selected')});if(!p.locked)d.appendChild(dtoken(p));dc.appendChild(d)});
+ function dx(){db.querySelectorAll('.cell').forEach(x=>x.classList.remove('excluded'));const rs=new Set(),cs=new Set();Object.values(dp).forEach(([r,c])=>{rs.add(r);cs.add(c)});db.querySelectorAll('.cell').forEach(x=>{const r=+x.dataset.r,c=+x.dataset.c;if((rs.has(r)||cs.has(c))&&!x.querySelector('.token'))x.classList.add('excluded')})}
+ function dreturn(id){const p=decisionPeople.find(x=>x.id===id),card=dc.querySelector(`[data-id="${id}"]`);db.querySelectorAll(`.token[data-id="${id}"]`).forEach(t=>t.remove());if(!card.classList.contains('locked'))card.appendChild(dtoken(p));delete dp[id];dx();dstate()}
+ function dplace(id,r,c){const p=decisionPeople.find(x=>x.id===id),card=dc.querySelector(`[data-id="${id}"]`);if(!p||!card||card.classList.contains('locked'))return;for(const [o,[rr,cc]] of Object.entries(dp))if(o!==id&&(rr===r||cc===c))return;const target=dat(r,c);if(target.querySelector('.token')&&target.querySelector('.token').dataset.id!==id)return;db.querySelectorAll(`.token[data-id="${id}"]`).forEach(t=>t.remove());target.appendChild(dtoken(p));dp[id]=[r,c];card.classList.remove('selected');dx();dstate()}
+ function dstate(){const first=decisionPeople.filter(p=>p.id!=='futuro').filter(p=>dp[p.id]).length,fc=dc.querySelector('[data-id="futuro"]');if(first===9&&fc.classList.contains('locked')){fc.classList.remove('locked');fc.querySelector('.portrait').textContent='👑';fc.querySelector('.cardText b').textContent='Silvia do Futuro';fc.querySelector('.cardText small').textContent=decisionPeople.find(p=>p.id==='futuro').clue;fc.appendChild(dtoken(decisionPeople.find(p=>p.id==='futuro')));ds.innerHTML='👑 <b>Silvia do Futuro está desbloqueada.</b> O Trono agarda.'}const unlocked=!fc.classList.contains('locked'),total=Object.keys(dp).length;dcheck.disabled=!(unlocked&&total===10);if(!unlocked)ds.textContent=`${first}/9 Silvias colocadas. A última aínda non chegou.`;else if(!dp.futuro)ds.innerHTML='👑 <b>Silvia do Futuro está desbloqueada.</b> O Trono agarda.';else ds.textContent='As 10 Silvias están colocadas. Xa podes comprobar.'}
+ dcheck.onclick=()=>{let good=0;db.querySelectorAll('.token').forEach(t=>{t.classList.remove('good','bad');const a=dp[t.dataset.id],b=decisionSolution[t.dataset.id],ok=b&&a[0]===b[0]&&a[1]===b[1];t.classList.add(ok?'good':'bad');if(ok)good++});if(good===10){ds.innerHTML='👑 <b>CASO RESOLTO.</b> Todas elas fixeron falta para chegar ata aquí.';db.classList.add('throneSolved')}else ds.textContent=`${good}/10 posicións correctas. Verde = ben; vermello = revisa.`};
+ document.querySelector('#dreset').onclick=()=>renderDecisionStory();dstate();
+}
+
 function unlockedIds(){return people.filter(p=>!cards.querySelector(`[data-id="${p.id}"]`).classList.contains('locked')).map(p=>p.id)}
 function updateCheckState(){
  const silviaCard=cards.querySelector('[data-id="silvia"]');
@@ -263,6 +312,8 @@ document.querySelectorAll('.storyTab').forEach(btn=>btn.addEventListener('click'
     renderWorkStory();
   } else if(activeStory==='historia3'){
     renderFearStory();
+  } else if(activeStory==='historia4'){
+    renderDecisionStory();
   } else {
     storyContent.classList.add('storyPlaceholder');
     storyContent.querySelector('.game').style.display='none';
