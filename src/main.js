@@ -271,7 +271,7 @@ const decisionObjects={'0,3':'🫂','0,8':'🎵','1,5':'🎸','1,9':'🎤','2,6'
 
 function renderDecisionStory(){
  storyContent.classList.remove('storyPlaceholder');
- storyContent.innerHTML=`<header class="hero decisionHero"><div><span class="eyebrow">EXPEDIENTE 10×10 · HISTORIA 4</span><h1>SILDOKU</h1><p>As decisións</p></div></header><div class="game decisionGame"><aside class="leftPanel panel decisionPanel"><h2>CANTAS SILVIAS HAI?</h2><p class="muted">A mesma persoa, moitas maneiras de estar no mundo.</p><div id="dcards" class="cards"></div></aside><main class="center"><div class="boardShell"><div class="colCoords">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<span>${n}</span>`).join('')}</div><div class="boardLine"><div class="rowCoords">${'ABCDEFGHIJ'.split('').map(x=>`<span>${x}</span>`).join('')}</div><div id="dboard" class="board decisionBoard"></div></div></div><div class="decisionLegend">Todas foron, son ou poden ser parte da mesma Silvia.</div></main><aside class="rightPanel panel decisionPanel"><section class="general decisionGeneral"><h2>PISTA XERAL</h2><p><b>Cantas Silvias pode haber dentro dunha mesma Silvia?</b> Algunhas rin, outras bailan, outras pensan e outras choran. Todas forman parte da mesma historia. Coloca cada Silvia no seu lugar.</p><p class="decisionRule">Unha Silvia por fila e unha por columna.</p></section><div id="dstatus" class="status">Coloca as nove Silvias dispoñibles.</div><div class="actions"><button id="dcheck" class="primary" disabled>🔎 COMPROBAR</button><button id="dreset" class="secondary">↻ LIMPAR</button></div></aside></div>`;
+ storyContent.innerHTML=`<header class="hero decisionHero"><div><span class="eyebrow">EXPEDIENTE 10×10 · HISTORIA 4</span><h1>SILDOKU</h1><p>Silvias</p></div></header><div class="game decisionGame"><aside class="leftPanel panel decisionPanel"><h2>CANTAS SILVIAS HAI?</h2><p class="muted">A mesma persoa, moitas maneiras de estar no mundo.</p><div id="dcards" class="cards"></div></aside><main class="center"><div class="boardShell"><div class="colCoords">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<span>${n}</span>`).join('')}</div><div class="boardLine"><div class="rowCoords">${'ABCDEFGHIJ'.split('').map(x=>`<span>${x}</span>`).join('')}</div><div id="dboard" class="board decisionBoard"></div></div></div><div class="decisionLegend">Todas foron, son ou poden ser parte da mesma Silvia.</div></main><aside class="rightPanel panel decisionPanel"><section class="general decisionGeneral"><h2>PISTA XERAL</h2><p><b>Cantas Silvias pode haber dentro dunha mesma Silvia?</b> Algunhas rin, outras bailan, outras pensan e outras choran. Todas forman parte da mesma historia. Coloca cada Silvia no seu lugar.</p><p class="decisionRule">Unha Silvia por fila e unha por columna.</p></section><div id="dstatus" class="status">Coloca as nove Silvias dispoñibles.</div><div class="actions"><button id="dcheck" class="primary" disabled>🔎 COMPROBAR</button><button id="dreset" class="secondary">↻ LIMPAR</button></div></aside></div>`;
  const db=document.querySelector('#dboard'),dc=document.querySelector('#dcards'),ds=document.querySelector('#dstatus'),dcheck=document.querySelector('#dcheck'); const dp={}; const dat=(r,c)=>db.children[r*10+c];
  function dedges(r,c){const z=DZ[r][c],a=[];if(r===0||DZ[r-1][c]!==z)a.push('zt');if(r===9||DZ[r+1][c]!==z)a.push('zb');if(c===0||DZ[r][c-1]!==z)a.push('zl');if(c===9||DZ[r][c+1]!==z)a.push('zr');return a.join(' ')}
  for(let r=0;r<10;r++)for(let c=0;c<10;c++){const ce=document.createElement('div');ce.className=`cell decision-${DZ[r][c]} ${dedges(r,c)}`;ce.dataset.r=r;ce.dataset.c=c;if(decisionObjects[`${r},${c}`])ce.innerHTML=`<span class="object decisionObject">${decisionObjects[`${r},${c}`]}</span>`;ce.addEventListener('dragover',e=>e.preventDefault());ce.addEventListener('drop',e=>{e.preventDefault();dplace(e.dataTransfer.getData('text/plain'),r,c)});ce.addEventListener('click',()=>{const sel=dc.querySelector('.card.selected');if(sel)dplace(sel.dataset.id,r,c)});db.appendChild(ce)}
@@ -284,6 +284,70 @@ function renderDecisionStory(){
  function dstate(){const first=decisionPeople.filter(p=>p.id!=='futuro').filter(p=>dp[p.id]).length,fc=dc.querySelector('[data-id="futuro"]');if(first===9&&fc.classList.contains('locked')){fc.classList.remove('locked');fc.querySelector('.portrait').textContent='👑';fc.querySelector('.cardText b').textContent='Silvia do Futuro';fc.querySelector('.cardText small').textContent=decisionPeople.find(p=>p.id==='futuro').clue;fc.appendChild(dtoken(decisionPeople.find(p=>p.id==='futuro')));ds.innerHTML='👑 <b>Silvia do Futuro está desbloqueada.</b> O Trono agarda.'}const unlocked=!fc.classList.contains('locked'),total=Object.keys(dp).length;dcheck.disabled=!(unlocked&&total===10);if(!unlocked)ds.textContent=`${first}/9 Silvias colocadas. A última aínda non chegou.`;else if(!dp.futuro)ds.innerHTML='👑 <b>Silvia do Futuro está desbloqueada.</b> O Trono agarda.';else ds.textContent='As 10 Silvias están colocadas. Xa podes comprobar.'}
  dcheck.onclick=()=>{let good=0;db.querySelectorAll('.token').forEach(t=>{t.classList.remove('good','bad');const a=dp[t.dataset.id],b=decisionSolution[t.dataset.id],ok=b&&a[0]===b[0]&&a[1]===b[1];t.classList.add(ok?'good':'bad');if(ok)good++});if(good===10){ds.innerHTML='👑 <b>CASO RESOLTO.</b> Todas elas fixeron falta para chegar ata aquí.';db.classList.add('throneSolved')}else ds.textContent=`${good}/10 posicións correctas. Verde = ben; vermello = revisa.`};
  document.querySelector('#dreset').onclick=()=>renderDecisionStory();dstate();
+}
+
+
+
+// Historia 5 · O que queda. Os nomes escólleos quen xoga; o puzzle mantén dez roles fixos.
+const remainsRoles=[
+ {id:'q1',role:'Persoa 1',icon:'🧑🏻',clue:'Está na primeira fila, onde todo nace.'},
+ {id:'q2',role:'Persoa 2',icon:'👩🏼',clue:'Está na parte noroeste do taboleiro.'},
+ {id:'q3',role:'Persoa 3',icon:'👨🏽',clue:'Está na terceira fila.'},
+ {id:'q4',role:'Persoa 4',icon:'🧑🏾',clue:'Queda 2 filas máis abaixo ca Persoa 2 e está na 4ª fila.'},
+ {id:'q5',role:'Persoa 5',icon:'👩🏻',clue:'5 - 5.'},
+ {id:'q6',role:'Persoa 6',icon:'👨🏼',clue:'Está na primeira columna.'},
+ {id:'q7',role:'Persoa 7',icon:'🧑🏽',clue:'Está ao lado dunha cámara.'},
+ {id:'q8',role:'Persoa 8',icon:'👩🏾',clue:'Está resgardada.'},
+ {id:'q9',role:'Persoa 9',icon:'👨🏻',clue:'Está entre Persoa 8 e Persoa 7 en columnas.'},
+ {id:'q10',role:'Persoa 10',icon:'🧑🏼',clue:'Está na última fila.'}
+];
+const QZ=[
+ ['raices','raices','raices','raices','raices','pegada','pegada','pegada','pegada','pegada'],
+ ['raices','raices','raices','raices','raices','pegada','pegada','pegada','pegada','pegada'],
+ ['sorrisos','sorrisos','sorrisos','sorrisos','raices','pegada','pegada','pegada','pegada','pegada'],
+ ['sorrisos','sorrisos','sorrisos','sorrisos','corazon','corazon','caminho','caminho','caminho','caminho'],
+ ['sorrisos','sorrisos','sorrisos','corazon','corazon','corazon','caminho','caminho','caminho','caminho'],
+ ['refuxio','refuxio','refuxio','corazon','corazon','corazon','caminho','caminho','caminho','caminho'],
+ ['refuxio','refuxio','refuxio','refuxio','corazon','caminho','caminho','recordos','recordos','recordos'],
+ ['refuxio','refuxio','refuxio','refuxio','refuxio','recordos','recordos','recordos','recordos','recordos'],
+ ['refuxio','refuxio','refuxio','refuxio','refuxio','recordos','recordos','recordos','recordos','recordos'],
+ ['refuxio','refuxio','refuxio','refuxio','refuxio','recordos','recordos','recordos','recordos','recordos']
+];
+const remainsZoneNames={raices:'AS RAÍCES',pegada:'A PEGADA',sorrisos:'OS SORRISOS',caminho:'O CAMIÑO',corazon:'O CORAZÓN',refuxio:'O REFUXIO',recordos:'OS RECORDOS'};
+const remainsLabels={raices:[0,0],pegada:[0,5],sorrisos:[2,0],caminho:[3,6],corazon:[3,4],refuxio:[5,0],recordos:[6,7]};
+const remainsSolution={q1:[0,1],q2:[1,6],q3:[2,3],q4:[3,8],q5:[4,4],q6:[5,0],q7:[6,9],q8:[7,2],q9:[8,7],q10:[9,5]};
+const remainsObjects={'0,3':'🌿','0,8':'🦋','1,0':'🌳','1,9':'🍃','2,1':'😊','2,6':'🦋','3,2':'☀️','3,7':'👣','4,0':'🎈','4,5':'❤️','5,2':'🫶','5,7':'🛤️','6,3':'🏡','6,8':'📷','7,0':'🪴','7,6':'📖','8,4':'🕯️','8,9':'⭐','9,1':'🪵','9,8':'🌌'};
+const remainsDescriptions=[
+ ['🌳','As Raíces','Persoas que forman parte de onde vés e da túa historia.'],
+ ['🦋','A Pegada','Persoas que deixaron algo en ti, grande ou pequeno.'],
+ ['🛤️','O Camiño','Persoas que percorreron ou percorren contigo unha parte da vida.'],
+ ['😊','Os Sorrisos','Persoas coas que quedan risas, parvadas e momentos bos.'],
+ ['🤍','O Refuxio','Persoas que algunha vez foron apoio, calma ou un lugar seguro.'],
+ ['📖','Os Recordos','Persoas ligadas a momentos que seguen aparecendo cando miras atrás.'],
+ ['❤️','O Corazón','Hai persoas que poderían estar en todas as anteriores. No centro sempre ten que haber alguén.']
+];
+
+function renderRemainsStory(){
+ storyContent.classList.remove('storyPlaceholder','lockedStoryPreview');
+ storyContent.innerHTML=`<header class="hero remainsHero"><div><span class="eyebrow">EXPEDIENTE 10×10 · HISTORIA 5</span><h1>SILDOKU</h1><p>O que queda</p></div></header>
+ <section class="remainsIntro panel"><h2>O que queda</h2><p class="remainsIntroLead">Un recordo do que queda.</p><p>Hai persoas que botan raíces, outras deixan pegada, algunhas comparten camiño, deixan sorrisos, convértense en refuxio ou quedan nos recordos. E ás veces hai alguén que podería estar en todas partes.</p><p><b>Esta vez os nomes pólos ti.</b> Nun taboleiro só caben dez, pero na vida cabe moita máis xente. Podes repetir persoas e volver xogar cantas veces queiras.</p><div class="roomGuide">${remainsDescriptions.map(([i,n,d])=>`<article><span>${i}</span><div><b>${n}</b><small>${d}</small></div></article>`).join('')}</div></section>
+ <div class="game remainsGame"><aside class="leftPanel panel remainsPanel"><h2>OS 10 NOMES</h2><p class="muted">Le as pistas primeiro e escribe un nome en cada ficha. Podes repetir nomes.</p><div id="qcards" class="cards remainsCards"></div><button id="qstart" class="primary remainsStart" disabled>COMEZAR A PARTIDA</button></aside>
+ <main class="center"><div class="boardShell"><div class="colCoords">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<span>${n}</span>`).join('')}</div><div class="boardLine"><div class="rowCoords">${'ABCDEFGHIJ'.split('').map(x=>`<span>${x}</span>`).join('')}</div><div id="qboard" class="board remainsBoard boardDisabled"></div></div></div><div class="remainsLegend">As habitacións falan do que queda; os nomes escóllelos ti.</div></main>
+ <aside class="rightPanel panel remainsPanel"><section class="general remainsGeneral"><h2>PISTA XERAL</h2><p>Hai <b>unha persoa por fila e unha por columna</b>. Todas as zonas teñen <b>1 persoa</b>, agás <b>O Refuxio, que ten 2</b>, e <b>Os Recordos, que teñen 3</b>. <b>O Corazón sempre ten que quedar ocupado.</b></p><p>Non poderás colocar fichas ata escribir os dez nomes. Ao comezar, os nomes quedan bloqueados.</p></section><div id="qstatus" class="status">Escribe os 10 nomes para poder comezar.</div><div class="actions"><button id="qcheck" class="primary" disabled>🔎 COMPROBAR</button><button id="qreset" class="secondary">↻ LIMPAR</button></div></aside></div>`;
+ const qb=document.querySelector('#qboard'),qc=document.querySelector('#qcards'),qs=document.querySelector('#qstatus'),qcheck=document.querySelector('#qcheck'),qstart=document.querySelector('#qstart');
+ let started=false; const qp={}; const names={}; const qat=(r,c)=>qb.children[r*10+c];
+ function qedges(r,c){const z=QZ[r][c],a=[];if(r===0||QZ[r-1][c]!==z)a.push('zt');if(r===9||QZ[r+1][c]!==z)a.push('zb');if(c===0||QZ[r][c-1]!==z)a.push('zl');if(c===9||QZ[r][c+1]!==z)a.push('zr');return a.join(' ')}
+ for(let r=0;r<10;r++)for(let c=0;c<10;c++){const ce=document.createElement('div');ce.className=`cell remains-${QZ[r][c]} ${qedges(r,c)}`;ce.dataset.r=r;ce.dataset.c=c;if(remainsObjects[`${r},${c}`])ce.innerHTML=`<span class="object remainsObject">${remainsObjects[`${r},${c}`]}</span>`;ce.addEventListener('dragover',e=>{if(started)e.preventDefault()});ce.addEventListener('drop',e=>{e.preventDefault();if(started)qplace(e.dataTransfer.getData('text/plain'),r,c)});ce.addEventListener('click',()=>{if(!started)return;const sel=qc.querySelector('.card.selected');if(sel)qplace(sel.dataset.id,r,c)});qb.appendChild(ce)}
+ for(const [z,[r,c]] of Object.entries(remainsLabels)){const l=document.createElement('span');l.className='zoneLabel remainsZoneLabel';l.textContent=remainsZoneNames[z];qat(r,c).appendChild(l)}
+ function qtoken(p){const t=document.createElement('div');t.className='token remainsToken';t.dataset.id=p.id;t.draggable=true;t.innerHTML=`<span>${p.icon}</span><b>${names[p.id]}</b>`;t.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',p.id));t.ondblclick=()=>qreturn(p.id);return t}
+ remainsRoles.forEach((p,i)=>{const d=document.createElement('article');d.className='card remainsNameCard';d.dataset.id=p.id;d.innerHTML=`<div class="portrait">${p.icon}</div><div class="cardText"><b>${p.role}</b><small>${p.clue}</small><input class="nameInput" maxlength="28" autocomplete="off" placeholder="Escribe un nome…" aria-label="Nome para ${p.role}"></div>`;const inp=d.querySelector('input');inp.addEventListener('input',()=>{names[p.id]=inp.value.trim();qstart.disabled=!remainsRoles.every(x=>names[x.id]);qs.textContent=qstart.disabled?'Escribe os 10 nomes para poder comezar.':'Xa están os 10 nomes. Cando queiras, comeza a partida.'});d.addEventListener('click',e=>{if(!started||e.target.tagName==='INPUT')return;qc.querySelectorAll('.card').forEach(x=>x.classList.remove('selected'));d.classList.add('selected')});qc.appendChild(d)});
+ qstart.onclick=()=>{if(!remainsRoles.every(x=>names[x.id]))return;started=true;qb.classList.remove('boardDisabled');qstart.disabled=true;qstart.textContent='NOMES BLOQUEADOS';remainsRoles.forEach(p=>{const card=qc.querySelector(`[data-id="${p.id}"]`);card.querySelector('.cardText b').textContent=names[p.id];card.querySelector('input')?.remove();card.appendChild(qtoken(p));});qs.textContent='0/10 persoas colocadas. Agora xa podes resolver o Sildoku.'};
+ function qx(){qb.querySelectorAll('.cell').forEach(x=>x.classList.remove('excluded'));const rs=new Set(),cs=new Set();Object.values(qp).forEach(([r,c])=>{rs.add(r);cs.add(c)});qb.querySelectorAll('.cell').forEach(x=>{const r=+x.dataset.r,c=+x.dataset.c;if((rs.has(r)||cs.has(c))&&!x.querySelector('.token'))x.classList.add('excluded')})}
+ function qreturn(id){if(!started)return;const p=remainsRoles.find(x=>x.id===id),card=qc.querySelector(`[data-id="${id}"]`);qb.querySelectorAll(`.token[data-id="${id}"]`).forEach(t=>t.remove());card.appendChild(qtoken(p));delete qp[id];qx();qstate()}
+ function qplace(id,r,c){if(!started)return;const p=remainsRoles.find(x=>x.id===id);if(!p)return;for(const [o,[rr,cc]] of Object.entries(qp))if(o!==id&&(rr===r||cc===c))return;const target=qat(r,c);if(target.querySelector('.token')&&target.querySelector('.token').dataset.id!==id)return;qb.querySelectorAll(`.token[data-id="${id}"]`).forEach(t=>t.remove());target.appendChild(qtoken(p));qp[id]=[r,c];qc.querySelector(`[data-id="${id}"]`).classList.remove('selected');qx();qstate()}
+ function qstate(){const n=Object.keys(qp).length;qcheck.disabled=n!==10;qs.textContent=n===10?'As 10 persoas están colocadas. Xa podes comprobar.':`${n}/10 persoas colocadas.`}
+ qcheck.onclick=()=>{let good=0;qb.querySelectorAll('.token').forEach(t=>{t.classList.remove('good','bad');const a=qp[t.dataset.id],b=remainsSolution[t.dataset.id],ok=b&&a[0]===b[0]&&a[1]===b[1];t.classList.add(ok?'good':'bad');if(ok)good++});qs.innerHTML=good===10?'❤️ <b>CASO RESOLTO.</b> Hai xente que queda de maneiras distintas.':`${good}/10 posicións correctas. Verde = ben; vermello = revisa.`};
+ document.querySelector('#qreset').onclick=()=>{if(!started || window.confirm('Queres empezar de novo? Borraranse todos os nomes e a partida actual.'))renderRemainsStory()};
 }
 
 function unlockedIds(){return people.filter(p=>!cards.querySelector(`[data-id="${p.id}"]`).classList.contains('locked')).map(p=>p.id)}
@@ -311,7 +375,9 @@ function unlockSilvia(){const card=cards.querySelector('[data-id="silvia"]');if(
 function check(){if(checkBtn.disabled)return;let correctOthers=0;document.querySelectorAll('.board .token').forEach(t=>t.classList.remove('good','bad'));for(const [id,pos]of Object.entries(placements)){const t=document.querySelector(`.board .token[data-id="${id}"]`),sol=solution[id],ok=sol&&sol[0]===pos[0]&&sol[1]===pos[1]&&!conflicts(id,pos);t?.classList.add(ok?'good':'bad');if(ok&&id!=='silvia')correctOthers++}const s=placements.silvia;if(s&&s[0]===solution.silvia[0]&&s[1]===solution.silvia[1]&&!conflicts('silvia',s)){status.innerHTML='🌅 <b>CASO RESOLTO.</b> Todo está no seu lugar.';document.body.classList.add('solved');checkBtn.disabled=true;return}status.textContent=`${correctOthers}/9 posicións previas correctas. Verde = ben; vermello = revisa.`}
 checkBtn.onclick=check;document.querySelector('#reset').onclick=()=>location.reload();const dlg=document.querySelector('#rules');document.querySelector('#rulesBtn').onclick=()=>dlg.showModal();document.querySelector('#closeRules').onclick=()=>dlg.close();
 const storyContent=document.querySelector('#storyContent');
+function setPageTitle(story){document.title=`Sildoku - ${story.label}`;}
 function renderStoryById(storyId, title){
+  const current=stories.find(s=>s.id===storyId); if(current) setPageTitle(current);
   if(storyId==='historia1'){
     location.reload();
   } else if(storyId==='historia2'){
@@ -320,6 +386,8 @@ function renderStoryById(storyId, title){
     renderFearStory();
   } else if(storyId==='historia4'){
     renderDecisionStory();
+  } else if(storyId==='historia5'){
+    renderRemainsStory();
   } else {
     storyContent.classList.add('storyPlaceholder');
     const game=storyContent.querySelector('.game'); if(game) game.style.display='none';
@@ -334,6 +402,7 @@ function showLockedStory(story){
   if(story.id==='historia2') renderWorkStory();
   else if(story.id==='historia3') renderFearStory();
   else if(story.id==='historia4') renderDecisionStory();
+  else if(story.id==='historia5') renderRemainsStory();
   else {
     storyContent.classList.add('storyPlaceholder');
     storyContent.innerHTML=`<section class="comingSoon lockedPreviewDummy"><span>EXPEDIENTE PECHADO</span><h2>${story.label}</h2><p>O contido aparecerá cando chegue o seu día.</p></section>`;
@@ -348,6 +417,7 @@ document.querySelectorAll('.storyTab').forEach(btn=>btn.addEventListener('click'
   document.querySelectorAll('.storyTab').forEach(x=>x.classList.toggle('active',x===btn));
   activeStory=btn.dataset.story;
   const story=stories.find(s=>s.id===activeStory);
+  setPageTitle(story);
   if(!storyIsAvailable(story)){
     showLockedStory(story);
     return;
@@ -355,3 +425,5 @@ document.querySelectorAll('.storyTab').forEach(btn=>btn.addEventListener('click'
   renderStoryById(activeStory, btn.textContent);
 }));
 updateCheckState();
+
+setPageTitle(stories.find(s=>s.id===activeStory));

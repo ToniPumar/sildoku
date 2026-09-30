@@ -71,3 +71,28 @@
 .lockedDateCard strong{display:block;font:700 clamp(30px,5vw,48px)/1 Georgia,serif;letter-spacing:.03em}
 .lockedDateCard small{display:block;margin-top:10px;font:700 12px system-ui,sans-serif;color:#786958}
 @media(max-width:620px){.lockedDateOverlay{position:fixed;top:58px}.lockedDateCard{padding:25px 20px}.storyTab[data-locked="true"]{padding-right:28px}}
+
+/* V28 · Historia 5 · O que queda */
+.remainsHero{background:linear-gradient(100deg,#4e4936,#8b7952 52%,#d8c99d);color:#fffaf0;border-color:#746747}.remainsIntro{margin:14px;max-width:none;background:#faf5e9;border-color:#c9b991}.remainsIntro h2{font:700 22px Georgia,serif;margin:0 0 6px}.remainsIntro>p{max-width:980px;margin:5px 0;color:#5f5547}.roomGuide{display:grid;grid-template-columns:repeat(7,minmax(120px,1fr));gap:7px;margin-top:12px}.roomGuide article{display:flex;gap:7px;align-items:flex-start;background:#fffaf1;border:1px solid #d6c8ae;border-radius:10px;padding:8px}.roomGuide article>span{font-size:19px}.roomGuide b,.roomGuide small{display:block}.roomGuide b{font:700 12px Georgia,serif}.roomGuide small{font-size:9px;line-height:1.25;color:#756b5e;margin-top:2px}.remainsPanel{background:#f8f3e8;border-color:#baa989}.remainsGeneral{background:#f3ead7;border-color:#c5ae83;border-left:4px solid #9b7b4f}.remainsCards{grid-template-columns:1fr}.remainsNameCard{cursor:default;align-items:flex-start}.remainsNameCard .cardText{min-width:0;flex:1}.nameInput{width:100%;margin-top:7px;padding:7px 8px;border:1px solid #b9aa91;border-radius:7px;background:#fffdf8;font:700 12px system-ui,sans-serif;color:#2e2922}.nameInput:disabled{background:#e9e3d7;color:#62594e}.remainsStart{width:100%;margin-top:10px}.remainsStart:disabled{opacity:.45;cursor:not-allowed}.remainsLegend{margin-top:9px;font:italic 11px Georgia,serif;color:#716553}.remainsBoard{background:#554b3b;box-shadow:0 14px 34px #21170f44;transition:.2s}.remainsBoard.boardDisabled{filter:grayscale(.5);opacity:.58;pointer-events:none}.remains-raices{background:linear-gradient(145deg,#c8d4aa,#aebd8e)}.remains-pegada{background:linear-gradient(145deg,#e1cfad,#ccb48c)}.remains-sorrisos{background:linear-gradient(145deg,#f0dda0,#e5c77d)}.remains-caminho{background:linear-gradient(145deg,#d7c5a7,#bda888)}.remains-refuxio{background:linear-gradient(145deg,#d8d1c0,#beb5a2)}.remains-recordos{background:linear-gradient(145deg,#aaa8bd,#85859d);color:#fff}.remains-corazon{background:radial-gradient(circle at 50% 45%,#ffe9d9 0 18%,#dca59a 52%,#b87d78 100%)}.remainsZoneLabel{z-index:20;max-width:none;white-space:nowrap;background:#3c352bdc;color:#fff8eb;border-color:#cbb894;font-size:clamp(5.5px,.58vw,8px);box-shadow:0 1px 3px #0004}.remains-corazon .remainsZoneLabel{background:#fff1e9ee;color:#743f3b;border-color:#a76b65}.remainsBoard .cell{min-width:0;min-height:0;overflow:visible}.remainsObject{z-index:2;opacity:.7}.remainsToken{position:absolute;inset:9%;width:auto;height:auto;min-width:0;min-height:0;max-width:82%;max-height:82%;margin:auto;z-index:7;background:#fffaf0;border-color:#62513e}.remainsToken b{display:block;width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.remainsBoard .cell.excluded::after{z-index:8}.remainsBoard .remains-corazon{box-shadow:inset 0 0 0 2px #8e5953}.remainsBoard .remains-corazon .remainsToken{border-color:#9c554f;background:#fff4ee}@media(max-width:1200px){.roomGuide{grid-template-columns:repeat(4,1fr)}}@media(max-width:760px){.roomGuide{grid-template-columns:repeat(2,1fr)}.remainsIntro{margin:7px}.remainsBoard .remainsToken{inset:11%;max-width:78%;max-height:78%}}
+\n/* V29 · O que queda: preparación compacta e responsive */
+.remainsIntroLead{font:italic 700 14px Georgia,serif!important;color:#796a55!important;margin-top:-2px!important}
+.remainsCards{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.remainsNameCard{min-height:96px;padding:6px;display:flex;gap:5px}
+.remainsNameCard .portrait{font-size:21px;height:27px;flex:0 0 25px;display:flex;align-items:center;justify-content:center}
+.remainsNameCard .cardText{text-align:left}
+.remainsNameCard .cardText b{font-size:11px}
+.remainsNameCard .cardText small{font-size:9px;min-height:23px}
+.remainsNameCard .nameInput{width:min(100%,150px);height:27px;margin-top:4px;padding:4px 6px;font-size:11px}
+@media(max-width:760px){
+ .remainsIntro{margin:6px;width:calc(100% - 12px);overflow:hidden}
+ .remainsIntro h2{font-size:19px}
+ .remainsIntro>p{font-size:12px;line-height:1.35}
+ .roomGuide{grid-template-columns:1fr 1fr;gap:5px;width:100%}
+ .roomGuide article{min-width:0;padding:6px;gap:5px}
+ .roomGuide article>span{font-size:16px;flex:0 0 19px}
+ .roomGuide b{font-size:10px}.roomGuide small{font-size:8px;overflow-wrap:anywhere}
+ .remainsCards{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .remainsNameCard{min-width:0;min-height:92px}
+ .remainsNameCard .nameInput{width:100%;max-width:130px}
+}
+@media(max-width:390px){.roomGuide{grid-template-columns:1fr}.remainsIntro{padding:9px}.remainsNameCard .portrait{display:flex;font-size:18px;flex:0 0 22px}}
