@@ -106,3 +106,36 @@
 .discoverBoard .discoverToken{position:absolute;inset:9%;width:auto;height:auto;max-width:82%;max-height:82%;margin:auto;border-radius:50%;opacity:1}
 .discoverBoard{border-radius:0!important;overflow:hidden!important}
 .discoverBoard .cell{border-radius:0!important}
+
+/* Historia 7 · A felicidade · Sildoku inverso */
+.happyHero{background:linear-gradient(135deg,#fff7dc,#f7e9ef)}
+.happyPanel{min-width:0}
+.happyBoard .cell{position:relative;cursor:pointer}
+.happyBoard .cell.zt{border-top:3px solid #463d35}.happyBoard .cell.zb{border-bottom:3px solid #463d35}.happyBoard .cell.zl{border-left:3px solid #463d35}.happyBoard .cell.zr{border-right:3px solid #463d35}
+.happy-z1{background:#f4e7cf}.happy-z2{background:#f8e2d4}.happy-z3{background:#e4efe1}.happy-z4{background:#dcebe8}.happy-z5{background:#eee5d8}.happy-z6{background:#f5e7ed}.happy-z7{background:#e8e4f2}.happy-z8{background:#e7edf4}.happy-z9{background:#e7f0e4}.happy-z10{background:#f7edcf}
+.happyToken{position:absolute;inset:12% 10%;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:5;font-size:clamp(18px,2.1vw,29px);line-height:1;text-align:center;cursor:pointer;border-radius:12px;background:rgba(255,255,255,.74);border:1px solid rgba(70,61,53,.18)}
+.happyToken b{font-size:8px;line-height:1.05;margin-top:2px;max-width:100%;white-space:normal;overflow:visible;text-overflow:clip;text-align:center;word-break:normal}
+.happyToken.selectedPerson{outline:3px solid #9a7248;background:#fff7dd}
+.happyZoneTag{position:absolute;z-index:7;left:3px;top:3px;max-width:calc(100% - 6px);font-size:7px;font-weight:900;line-height:1.05;padding:2px 3px;border-radius:4px;background:rgba(255,255,255,.9);pointer-events:none}
+.happyChoiceList{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.happyChoice{border:1px solid #d7cec3;background:#fff;border-radius:10px;padding:8px;font-size:12px;font-weight:800;text-align:left;cursor:pointer;min-width:0}
+.happyChoice.selected{outline:3px solid #b88d55;background:#fff8e9}.happyChoice.used{opacity:.48}
+.happyClue{border:1px solid #d7cec3;background:#fff;border-radius:10px;padding:9px;font-size:11px;line-height:1.25;cursor:pointer}
+.happyClue.selected{outline:3px solid #b88d55;background:#fff8e9}.happyClue.used{opacity:.5}.happyClue strong{display:block;margin-bottom:3px}
+.happyAssigned{font-size:9px;font-weight:900;color:#65584d;margin-top:4px}
+.happyFinal{padding:18px;text-align:center;border-radius:16px;background:#fff8e9;border:1px solid #dfcfb8}.happyFinal h2{margin:4px 0 8px}.happyFinal p{margin:5px 0}.happyBoard.finalGlow .cell{filter:saturate(1.12);box-shadow:inset 0 0 0 2px rgba(255,210,92,.18)}
+@media(max-width:760px){.happyChoiceList{grid-template-columns:1fr 1fr}.happyToken b{display:none}.happyZoneTag{font-size:6px}.happyChoice,.happyClue{font-size:10px;padding:7px}}
+
+/* Historia 7 · feedback e nomes compactos */
+.happyBoard .cell.roomCorrect{box-shadow:inset 0 0 0 3px #3d9b62!important;background-image:linear-gradient(rgba(71,170,103,.16),rgba(71,170,103,.16))}
+.happyBoard .cell.roomWrong{box-shadow:inset 0 0 0 3px #c65353!important;background-image:linear-gradient(rgba(198,83,83,.14),rgba(198,83,83,.14))}
+.happyChoice.correct{border-color:#3d9b62!important;background:#eaf7ee!important;opacity:1!important}
+.happyChoice.wrong{border-color:#c65353!important;background:#fdecec!important;opacity:1!important}
+@media(max-width:760px){.happyToken{inset:8% 6%}.happyToken b{display:block;font-size:6.5px;line-height:1}}
+/* Historia 7 v40: o feedback pertence só aos recadros laterais, nunca ao mapa. */
+.happyBoard .cell.roomCorrect,.happyBoard .cell.roomWrong{box-shadow:none!important;background-image:none!important}
+.happyClue.correct{border:3px solid #3d9b62!important;background:#eaf7ee!important;opacity:1!important}
+.happyClue.wrong{border:3px solid #c65353!important;background:#fdecec!important;opacity:1!important}
+.happyClue.lockedClue{opacity:.55;cursor:default;border-style:dashed}
+.happyClue.silviaReveal{margin-top:18px;padding:14px;font-size:11.5px;line-height:1.38;animation:silviaReveal .35s ease-out}
+@keyframes silviaReveal{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}

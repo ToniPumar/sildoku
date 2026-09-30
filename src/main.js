@@ -391,8 +391,63 @@ function renderDiscoverStory(){
  function canPlace(id,r,c){if(discoverObjects[`${r},${c}`])return false;for(const [oid,[rr,cc]]of Object.entries(placements))if(oid!==id&&(rr===r||cc===c))return false;return true}
  b.querySelectorAll('.cell').forEach(cell=>{cell.addEventListener('dragover',e=>e.preventDefault());cell.addEventListener('drop',e=>{e.preventDefault();const id=e.dataTransfer.getData('text/plain');if(!id)return;const r=+cell.dataset.r,c=+cell.dataset.c;if(canPlace(id,r,c)){placements[id]=[r,c];render()}});cell.addEventListener('click',()=>{const selected=cards.querySelector('.personCard.selected');if(!selected)return;const id=selected.dataset.id,r=+cell.dataset.r,c=+cell.dataset.c;if(canPlace(id,r,c)){placements[id]=[r,c];cards.querySelectorAll('.personCard').forEach(x=>x.classList.remove('selected'));render()}})});
  cards.querySelectorAll('.personCard').forEach(card=>card.addEventListener('click',e=>{if(e.target.closest('.token'))return;cards.querySelectorAll('.personCard').forEach(x=>x.classList.toggle('selected',x===card&&!card.classList.contains('selected')))}));
- check.onclick=()=>{let good=0;b.querySelectorAll('.discoverToken').forEach(t=>t.classList.remove('good','bad'));for(const [id,pos]of Object.entries(placements)){const sol=discoverSolution[id],ok=sol&&sol[0]===pos[0]&&sol[1]===pos[1];b.querySelector(`.discoverToken[data-id="${id}"]`)?.classList.add(ok?'good':'bad');if(ok)good++}status.innerHTML=good===10?'🌟 <b>CASO RESOLTO.</b> Aínda queda moito por descubrir.':`${good}/10 posicións correctas. Verde = ben; vermello = revisa.`};
+ check.onclick=()=>{if(phase===1){let good=0;clearRoomFeedback();for(const room of happyRooms){const ok=roomAssign[room.zone]===room.name;if(ok)good++;const btn=choices.querySelector(`[data-room="${CSS.escape(room.name)}"]`);if(btn)btn.classList.add(ok?'correct':'wrong')}if(good===7){setTimeout(()=>{phase=2;selected=null;status.innerHTML='✓ <b>As 7 habitacións están ben.</b> Agora descubre a quen pertence cada descrición.';renderPhase2()},650)}else status.textContent=`${good}/7 habitacións correctas. Revisa os recadros marcados.`;return}if(phase===2){let good=0;clearClueFeedback();for(const p of happyPeople){const ok=clueAssign[p.id]===p.id;if(ok)good++;const clue=choices.querySelector(`[data-clue="${p.id}"]`);if(clue)clue.classList.add(ok?'correct':'wrong')}if(good===10){setTimeout(()=>{phase=3;selected=null;choices.innerHTML=`<div class="happyFinal"><small>UNHA ÚLTIMA PREGUNTA</small><h2>Onde está a felicidade?</h2><p>Escolle calquera cela do taboleiro.</p></div>`;document.querySelector('#happyLeftTitle').textContent='A FELICIDADE';document.querySelector('#happyHelp').textContent='Todo está xa no seu lugar.';status.innerHTML='As habitacións e as persoas están identificadas. Só queda unha pregunta.';check.disabled=true;board.querySelectorAll('.happyToken').forEach(t=>{t.classList.remove('selectedPerson');t.querySelector('.happyAssigned')?.remove()})},650)}else status.textContent=`${good}/10 descricións correctas. Revisa os recadros marcados.`}};
  document.querySelector('#discoverReset').onclick=()=>renderDiscoverStory();state();
+}
+
+
+// Historia 7 · A felicidade · Sildoku inverso
+const happyPeople=[
+ {id:'carmen',name:'Avoa',icon:'👵🏻',zone:'z1',clue:'Hai lugares e persoas aos que o tempo non consegue facer pequenos. Aínda que xa non poidas volver a certos momentos, hai quen segue estando moi presente.'},
+ {id:'elva',name:'Elva',icon:'👧🏻',zone:'z2',clue:'Probablemente non sexa a máis grande deste taboleiro. O sitio que ocupa, en cambio...'},
+ {id:'mariav',name:'María',icon:'👩🏻',zone:'z3',clue:'Cando as cousas se poñen difíciles, hai persoas que saben quedar, escoitar e estar sen facer demasiado ruído.'},
+ {id:'balu',name:'Balú',icon:'🐶',zone:'z4',clue:'Chegou nun momento no que facía falta algo bo. É amigo de todo o mundo... e se te descoidas, lámbeche a cara 😂.'},
+ {id:'brais',name:'Brais',icon:'👨🏻',zone:'z5',clue:'Virgo. ♍'},
+ {id:'mama',name:'Mamá',icon:'👩🏻',zone:'z5',clue:'Hai relacións nas que ás veces non fai falta explicar demasiado para entenderse.'},
+ {id:'rocio',name:'Rocío',icon:'👩🏻‍🦱',zone:'z6',clue:'Houbo un aniversario lonxe da casa no que fixeches que un regalo chegase ata un hotel.'},
+ {id:'marcos',name:'Marcos',icon:'👨🏻',zone:'z6',clue:'Coñecéstesvos no traballo. Por sorte, o cariño non figura no contrato laboral.'},
+ {id:'nely',name:'Nely',icon:'👩🏻‍🦰',zone:'z6',clue:'Ya tú sabeeeh 😏 🇩🇴'},
+ {id:'silvia7',name:'Silvia',icon:'👩🏻',zone:'z7',clue:'Unha persoa que levou golpes, inquedanzas e momentos nos que todo pesaba máis do debido, pero que seguiu tirando para diante. Capaz de levantarse, de querer de verdade, de coidar á súa xente e de seguir atopando motivos para sorrir. Ten un sorriso dos que cambian un momento e un corazón no que caben estas nove persoas e moitas máis. Chegar ata o Sildoku 7 tamén di algo dela: segue aquí, avanzando, descubrindo cousas e demostrando que pode saír adiante, incluso cando ela mesma dubida. E ás veces, entre tanto querer aos demais, tamén merece lembrar todo o que vale ela.'}
+];
+const happyRooms=[
+ {zone:'z1',name:'Vedra'},
+ {zone:'z2',name:'Cuarto de Xogos'},
+ {zone:'z3',name:'Banco das Conversas'},
+ {zone:'z4',name:'Parque dos Paseos'},
+ {zone:'z5',name:'Mesa Familiar'},
+ {zone:'z6',name:'Amizade'},
+ {zone:'z7',name:'O Espello'}
+];
+const HZ=[
+ ['z1','z1','z1','z3','z3','z3','z3','z6','z6','z6'],
+ ['z1','z1','z2','z2','z3','z3','z6','z6','z6','z6'],
+ ['z1','z2','z2','z2','z2','z3','z3','z6','z6','z6'],
+ ['z4','z4','z2','z2','z5','z5','z3','z6','z6','z6'],
+ ['z4','z4','z4','z5','z5','z5','z5','z6','z6','z6'],
+ ['z4','z4','z5','z5','z5','z5','z6','z6','z6','z6'],
+ ['z4','z5','z5','z5','z5','z6','z6','z6','z6','z6'],
+ ['z5','z5','z5','z7','z7','z7','z6','z6','z6','z6'],
+ ['z5','z5','z7','z7','z7','z7','z7','z6','z6','z6'],
+ ['z5','z7','z7','z7','z7','z7','z7','z7','z6','z6']
+];
+const happyPos={carmen:[0,1],elva:[1,2],mariav:[2,5],balu:[3,0],brais:[4,4],mama:[5,3],rocio:[6,6],marcos:[7,9],nely:[8,8],silvia7:[9,7]};
+const happyDecor={'0,0':'🦋','1,3':'🧸','2,4':'💬','3,1':'🌳','4,5':'🍽️','5,2':'🏠','6,7':'🎁','7,8':'🤝','8,9':'💛','9,6':'🪞'};
+function renderHappyStory(){
+ storyContent.classList.remove('storyPlaceholder','lockedStoryPreview');
+ storyContent.innerHTML=`<header class="hero happyHero"><div><span class="eyebrow">EXPEDIENTE FINAL · HISTORIA 7</span><h1>SILDOKU</h1><p>A felicidade</p></div></header><div class="game"><aside class="leftPanel panel happyPanel"><h2 id="happyLeftTitle">NOMES DAS HABITACIÓNS</h2><p id="happyHelp" class="muted">Xa sabes resolver posicións. Esta vez dámoschas nós: todas as persoas están xa colocadas. O reto é reconstruír o que falta. Este último Sildoku ten dúas partes: primeiro pon nome ás 7 habitacións; despois descubrirás a quen pertence cada pista. Hai habitacións compartidas, así que mira ben todo o taboleiro antes de decidir.</p><div id="happyChoices" class="happyChoiceList"></div></aside><main class="center"><div class="boardShell"><div class="colCoords">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<span>${n}</span>`).join('')}</div><div class="boardLine"><div class="rowCoords">${'ABCDEFGHIJ'.split('').map(x=>`<span>${x}</span>`).join('')}</div><div id="happyBoard" class="board happyBoard"></div></div></div></main><aside class="rightPanel panel happyPanel"><section class="general"><h2>COMO SE XOGA</h2><p><b>Esta vez as posicións xa están resoltas.</b> Ti tes que completar o significado do taboleiro.</p><p><b>Parte 1.</b> Coloca os nomes das <b>7 habitacións</b>. Algunhas teñen unha persoa e outras están compartidas.</p><p><b>Parte 2.</b> Aparecerán <b>9 pistas</b>: asóciaas coa persoa correcta. Ao colocar as nove descubrirase a <b>pista 10</b>.</p><p>E cando todo encaixe, quedará unha última pregunta.</p></section><div id="happyStatus" class="status">0/7 habitacións identificadas.</div><div class="actions"><button id="happyCheck" class="primary" disabled>🔎 COMPROBAR</button><button id="happyReset" class="secondary">↻ LIMPAR</button></div></aside></div>`;
+ const board=document.querySelector('#happyBoard'),choices=document.querySelector('#happyChoices'),status=document.querySelector('#happyStatus'),check=document.querySelector('#happyCheck');
+ let phase=1,selected=null,roomAssign={},clueAssign={};
+ for(let r=0;r<10;r++)for(let c=0;c<10;c++){const z=HZ[r][c],cell=document.createElement('div');cell.className=`cell happy-${z}`;cell.dataset.r=r;cell.dataset.c=c;cell.dataset.zone=z;if(r===0||HZ[r-1][c]!==z)cell.classList.add('zt');if(r===9||HZ[r+1][c]!==z)cell.classList.add('zb');if(c===0||HZ[r][c-1]!==z)cell.classList.add('zl');if(c===9||HZ[r][c+1]!==z)cell.classList.add('zr');if(happyDecor[`${r},${c}`])cell.innerHTML=`<span class="object">${happyDecor[`${r},${c}`]}</span>`;board.appendChild(cell)}
+ for(const p of happyPeople){const [r,c]=happyPos[p.id],cell=board.querySelector(`[data-r="${r}"][data-c="${c}"]`),t=document.createElement('div');t.className='happyToken';t.dataset.person=p.id;t.innerHTML=`<span>${p.icon}</span><b>${p.name}</b>`;cell.appendChild(t)}
+ function clearRoomFeedback(){board.querySelectorAll('.cell').forEach(c=>c.classList.remove('roomCorrect','roomWrong'));choices.querySelectorAll('.happyChoice').forEach(b=>b.classList.remove('correct','wrong'))}
+ function paintRoomTags(){board.querySelectorAll('.happyZoneTag').forEach(x=>x.remove());for(const [zone,roomName] of Object.entries(roomAssign)){const cells=[...board.querySelectorAll(`[data-zone="${zone}"]`)];const first=cells.find(c=>!c.querySelector('.happyToken')&&!c.querySelector('.object'))||cells[0];if(first){const tag=document.createElement('span');tag.className='happyZoneTag';tag.textContent=roomName;first.appendChild(tag)}}}
+ function renderPhase1(){choices.innerHTML='';const roomOrder=['z6','z2','z7','z4','z1','z5','z3'];roomOrder.map(z=>happyRooms.find(r=>r.zone===z)).forEach(room=>{const b=document.createElement('button');b.type='button';b.className='happyChoice';b.textContent=room.name;b.dataset.room=room.name;if(Object.values(roomAssign).includes(room.name))b.classList.add('used');if(selected===room.name)b.classList.add('selected');b.onclick=()=>{clearRoomFeedback();selected=selected===room.name?null:room.name;renderPhase1()};choices.appendChild(b)});paintRoomTags();check.disabled=Object.keys(roomAssign).length!==7;status.textContent=`${Object.keys(roomAssign).length}/7 habitacións identificadas.`}
+ board.addEventListener('click',e=>{if(phase===1){const cell=e.target.closest('.cell');if(!cell||!selected)return;clearRoomFeedback();const zone=cell.dataset.zone;for(const z of Object.keys(roomAssign))if(roomAssign[z]===selected)delete roomAssign[z];roomAssign[zone]=selected;selected=null;renderPhase1();return}if(phase===2){const token=e.target.closest('.happyToken');if(!token||!selected)return;clearClueFeedback();const pid=token.dataset.person;for(const p of Object.keys(clueAssign))if(clueAssign[p]===selected)delete clueAssign[p];clueAssign[pid]=selected;selected=null;renderPhase2();return}if(phase===3){finishFinal()}});
+ function clearClueFeedback(){choices.querySelectorAll('.happyClue').forEach(d=>d.classList.remove('correct','wrong'))}
+ function renderPhase2(){document.querySelector('#happyLeftTitle').textContent='A QUEN PERTENCE?';document.querySelector('#happyHelp').textContent='Selecciona unha pista e toca a persoa á que cres que pertence. Cada persoa recibe unha soa pista. A pista 10 aparecerá cando coloques as outras nove.';choices.className='';choices.innerHTML='';const firstNine=happyPeople.slice(0,9);const nineAssigned=firstNine.every(p=>Object.values(clueAssign).includes(p.id));const clueOrder=['nely','mariav','brais','rocio','balu','mama','elva','marcos','carmen'];const visiblePeople=clueOrder.map(id=>happyPeople.find(p=>p.id===id));if(nineAssigned)visiblePeople.push(happyPeople.find(p=>p.id==='silvia7'));visiblePeople.forEach(p=>{const d=document.createElement('div');d.className='happyClue'+(p.id==='silvia7'?' silviaReveal':'');d.dataset.clue=p.id;if(selected===p.id)d.classList.add('selected');if(Object.values(clueAssign).includes(p.id))d.classList.add('used');d.textContent=p.clue;d.onclick=()=>{clearClueFeedback();selected=selected===p.id?null:p.id;renderPhase2()};choices.appendChild(d)});if(!nineAssigned){const lock=document.createElement('div');lock.className='happyClue lockedClue';lock.textContent='🔒 A última descrición descubrirase cando coloques as outras nove.';choices.appendChild(lock)}board.querySelectorAll('.happyToken').forEach(t=>{const clueId=clueAssign[t.dataset.person];t.classList.toggle('selectedPerson',!!clueId);const old=t.querySelector('.happyAssigned');if(old)old.remove();if(clueId){const a=document.createElement('span');a.className='happyAssigned';a.textContent='✓';t.appendChild(a)}});check.disabled=Object.keys(clueAssign).length!==10;status.textContent=`${Object.keys(clueAssign).length}/10 descricións asociadas.`}
+ check.onclick=()=>{if(phase===1){let good=0;clearRoomFeedback();for(const room of happyRooms){const ok=roomAssign[room.zone]===room.name;if(ok)good++;const btn=choices.querySelector(`[data-room="${CSS.escape(room.name)}"]`);if(btn)btn.classList.add(ok?'correct':'wrong')}if(good===7){setTimeout(()=>{phase=2;selected=null;status.innerHTML='✓ <b>As 7 habitacións están ben.</b> Agora descubre a quen pertence cada descrición.';board.querySelectorAll('.cell').forEach(c=>c.classList.remove('roomCorrect','roomWrong'));renderPhase2()},650)}else status.textContent=`${good}/7 habitacións correctas. Verde = correcta · Vermello = incorrecta.`;return}if(phase===2){let good=0;clearClueFeedback();for(const p of happyPeople){const ok=clueAssign[p.id]===p.id;if(ok)good++;const clue=choices.querySelector(`[data-clue="${p.id}"]`);if(clue)clue.classList.add(ok?'correct':'wrong')}if(good===10){phase=3;selected=null;choices.innerHTML=`<div class="happyFinal"><small>UNHA ÚLTIMA PREGUNTA</small><h2>Onde está a felicidade?</h2><p>Escolle calquera cela do taboleiro.</p></div>`;document.querySelector('#happyLeftTitle').textContent='A FELICIDADE';document.querySelector('#happyHelp').textContent='Todo está xa no seu lugar.';status.innerHTML='As habitacións e as persoas están identificadas. Só queda unha pregunta.';check.disabled=true;board.querySelectorAll('.happyToken').forEach(t=>{t.classList.remove('selectedPerson');t.querySelector('.happyAssigned')?.remove()})}else status.textContent=`${good}/10 descricións correctas. Revisa as asociacións.`}};
+ function finishFinal(){if(phase!==3)return;phase=4;board.classList.add('finalGlow');board.querySelectorAll('.cell').forEach(c=>c.classList.add('good'));choices.innerHTML=`<div class="happyFinal"><small>FIN · 🦋</small><h2>Unha soa cela nunca conta toda a historia.</h2><p><b>A vida tampouco.</b></p><p>Hai días difíciles, pero tamén persoas, momentos, risas, recordos e cousas que aínda quedan por descubrir.</p><p><b>Quizais a felicidade estea en aprender a mirar o taboleiro enteiro. 🦋</b></p></div>`;status.innerHTML='✨ <b>CASO RESOLTO.</b>'}
+ document.querySelector('#happyReset').onclick=()=>renderHappyStory();renderPhase1();
 }
 
 function unlockedIds(){return people.filter(p=>!cards.querySelector(`[data-id="${p.id}"]`).classList.contains('locked')).map(p=>p.id)}
@@ -435,6 +490,8 @@ function renderStoryById(storyId, title){
     renderRemainsStory();
   } else if(storyId==='historia6'){
     renderDiscoverStory();
+  } else if(storyId==='historia7'){
+    renderHappyStory();
   } else {
     storyContent.classList.add('storyPlaceholder');
     const game=storyContent.querySelector('.game'); if(game) game.style.display='none';
@@ -451,6 +508,7 @@ function showLockedStory(story){
   else if(story.id==='historia4') renderDecisionStory();
   else if(story.id==='historia5') renderRemainsStory();
   else if(story.id==='historia6') renderDiscoverStory();
+  else if(story.id==='historia7') renderHappyStory();
   else {
     storyContent.classList.add('storyPlaceholder');
     storyContent.innerHTML=`<section class="comingSoon lockedPreviewDummy"><span>EXPEDIENTE PECHADO</span><h2>${story.label}</h2><p>O contido aparecerá cando chegue o seu día.</p></section>`;
