@@ -96,3 +96,13 @@
  .remainsNameCard .nameInput{width:100%;max-width:130px}
 }
 @media(max-width:390px){.roomGuide{grid-template-columns:1fr}.remainsIntro{padding:9px}.remainsNameCard .portrait{display:flex;font-size:18px;flex:0 0 22px}}
+
+/* V32 · Historia 6 · Por descubrir */
+.discoverHero{background:linear-gradient(105deg,#3f6354,#789878 52%,#dfc98c);color:#fff;border-color:#607c69}.discoverPanel{background:#f8f4e9;border-color:#b9aa8e}.discoverGeneral{background:#edf2df;border-color:#b6c296;border-left:4px solid #728657}.discoverBoard{background:#4c5147;box-shadow:0 14px 34px #21170f44}.discover-aeroporto{background:#d9e1e5}.discover-natureza{background:#cbd8b3}.discover-comedor{background:#e5d0ad}.discover-praia{background:#efd590}.discover-traballo{background:#d6d7d3}.discover-piscina{background:#a8d8df}.discover-construir{background:repeating-linear-gradient(135deg,#d5c5a7 0 12px,#c5b28f 12px 24px)}.discover-estacion{background:#c9c3b9}.discover-hotel{background:#dfc8b4}.discover-cine{background:#aaa0ad;color:#fff}.discoverZoneLabel{z-index:20;max-width:none;white-space:nowrap;background:#34372fdd;color:#fff9ed;border-color:#d4c8ad;font-size:clamp(5.5px,.58vw,8px);box-shadow:0 1px 3px #0004}.discoverObject{z-index:2;opacity:.82}.discoverBoard .cell{min-width:0;min-height:0;overflow:visible}.discoverToken{position:absolute;inset:9%;width:auto;height:auto;min-width:0;min-height:0;max-width:82%;max-height:82%;margin:auto;z-index:7;background:#fffaf0;border-color:#62513e}.discoverToken b{display:block;width:92%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.discoverBoard .cell.excluded::after{z-index:8}.discoverPanel .personCard.selected{outline:3px solid #7c9b67;transform:translateY(-1px)}
+@media(max-width:620px){.discoverBoard .discoverToken{inset:11%;max-width:78%;max-height:78%}.discoverBoard .discoverZoneLabel{font-size:5px;padding:1px 2px}}
+/* V33 · corrección Historia 6: as fichas quedan dentro das tarxetas e o taboleiro conserva o 10×10 */
+.discoverPanel .personCard{position:relative;min-height:116px;overflow:hidden}
+.discoverPanel .personCard>.discoverToken{position:absolute;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;opacity:0;border-radius:12px}
+.discoverBoard .discoverToken{position:absolute;inset:9%;width:auto;height:auto;max-width:82%;max-height:82%;margin:auto;border-radius:50%;opacity:1}
+.discoverBoard{border-radius:0!important;overflow:hidden!important}
+.discoverBoard .cell{border-radius:0!important}

@@ -6,7 +6,7 @@ const stories = [
   { id:'historia3', label:'O medo', unlock:[2026,9,1] },
   { id:'historia4', label:'Silvias', unlock:[2026,9,2] },
   { id:'historia5', label:'O que queda', unlock:[2026,9,3] },
-  { id:'historia6', label:'O que vén', unlock:[2026,9,4] },
+  { id:'historia6', label:'Por descubrir', unlock:[2026,9,4] },
   { id:'historia7', label:'A felicidade', unlock:[2026,9,5] }
 ];
 // Desbloqueo acumulativo usando a data local do dispositivo.
@@ -350,6 +350,51 @@ function renderRemainsStory(){
  document.querySelector('#qreset').onclick=()=>{if(!started || window.confirm('Queres empezar de novo? Borraranse todos os nomes e a partida actual.'))renderRemainsStory()};
 }
 
+
+// Historia 6 · Por descubrir
+const discoverPeople=[
+ {id:'dsilvia',name:'Silvia',icon:'👩🏻',clue:'Está na última fila.'},
+ {id:'comezo',name:'Un novo comezo',icon:'🌱',clue:'Está na última columna.'},
+ {id:'boa_noticia',name:'Unha boa noticia',icon:'⭐',clue:'Está na esquina da súa zona.'},
+ {id:'sorpresa',name:'Unha sorpresa',icon:'🎁',clue:'Está esperando o tren xusto ao seu carón.'},
+ {id:'casualidade',name:'Unha casualidade',icon:'🍀',clue:'Está na esquina do Comedor.'},
+ {id:'reencontro',name:'Un reencontro',icon:'🤗',clue:'Está ao lado dun fieito.'},
+ {id:'risa',name:'Unha risa',icon:'😄',clue:'Non está na última fila.'},
+ {id:'logro',name:'Un logro',icon:'🏆',clue:'Está mollado.'},
+ {id:'dia',name:'Un día inesquecible',icon:'✨',clue:'Está na area, na fila máis ao sur.'},
+ {id:'inesperado',name:'Algo inesperado',icon:'💫',clue:'Está ao lado dunha maleta e tamén dun avión.'}
+];
+const discoverSolution={inesperado:[0,0],reencontro:[1,2],casualidade:[2,4],dia:[3,7],comezo:[4,9],logro:[5,1],boa_noticia:[6,6],sorpresa:[7,5],risa:[8,8],dsilvia:[9,3]};
+const discoverZones=[
+ ['aeroporto','aeroporto','natureza','natureza','natureza','comedor','praia','praia','praia','traballo'],
+ ['aeroporto','aeroporto','natureza','natureza','natureza','comedor','praia','praia','praia','traballo'],
+ ['aeroporto','aeroporto','natureza','natureza','comedor','comedor','comedor','praia','praia','traballo'],
+ ['aeroporto','aeroporto','natureza','natureza','comedor','comedor','comedor','praia','praia','traballo'],
+ ['aeroporto','aeroporto','comedor','comedor','comedor','comedor','comedor','hotel','hotel','traballo'],
+ ['piscina','piscina','comedor','comedor','comedor','comedor','hotel','hotel','hotel','hotel'],
+ ['piscina','piscina','construir','construir','construir','construir','hotel','hotel','hotel','hotel'],
+ ['piscina','piscina','piscina','construir','construir','estacion','estacion','hotel','hotel','cine'],
+ ['piscina','piscina','piscina','construir','estacion','estacion','estacion','estacion','cine','cine'],
+ ['piscina','piscina','piscina','construir','estacion','estacion','estacion','estacion','cine','cine']
+];
+const discoverZoneNames={aeroporto:'AEROPORTO',natureza:'NATUREZA',comedor:'COMEDOR',praia:'PRAIA',traballo:'TRABALLO',piscina:'PISCINA',construir:'POR CONSTRUÍR',estacion:'ESTACIÓN',hotel:'HOTEL',cine:'CINE'};
+const discoverLabels={aeroporto:[0,0],natureza:[0,2],comedor:[2,4],praia:[0,6],traballo:[0,9],piscina:[5,0],construir:[6,2],estacion:[8,4],hotel:[4,7],cine:[7,9]};
+const discoverObjects={'0,1':'🧳','1,0':'✈️','2,1':'🧳','0,3':'🌳','2,2':'🌿','3,3':'🌼','2,5':'🍽️','3,6':'🪑','4,4':'👥','0,7':'☀️','1,8':'🏖️','2,8':'🌊','0,9':'💻','2,9':'📎','3,9':'🗂️','6,0':'🏊','7,1':'💦','9,0':'🛟','6,3':'🏗️','7,4':'🧱','9,2':'🪜','8,5':'🚆','9,6':'🕐','9,5':'🧳','4,8':'🛎️','5,7':'🛏️','6,8':'🗝️','7,9':'🎬','8,9':'🍿','9,9':'🎟️'};
+function renderDiscoverStory(){
+ storyContent.classList.remove('storyPlaceholder','lockedStoryPreview');storyContent.innerHTML=`<header class="hero discoverHero"><div><span class="eyebrow">EXPEDIENTE 10×10 · HISTORIA 6</span><h1>SILDOKU</h1><p>Por descubrir</p></div></header><div class="game"><aside class="leftPanel panel discoverPanel"><h2>POR DESCUBRIR</h2><p class="muted">Cousas boas que poden aparecer polo camiño. As pistas indican onde colocar cada ficha.</p><div id="discoverCards" class="cards"></div></aside><main class="center"><div class="boardShell"><div class="colCoords">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<span>${n}</span>`).join('')}</div><div class="boardLine"><div class="rowCoords">${'ABCDEFGHIJ'.split('').map(x=>`<span>${x}</span>`).join('')}</div><div id="discoverBoard" class="board discoverBoard"></div></div></div></main><aside class="rightPanel panel discoverPanel"><section class="general discoverGeneral"><h2>PISTA XERAL</h2><p>Hai exactamente <b>unha ficha en cada fila, unha en cada columna e unha en cada habitación</b>.</p><p>Os elementos do escenario ocupan a súa casilla e non se poden tapar.</p></section><div id="discoverStatus" class="status">Coloca as 10 fichas no taboleiro.</div><div class="actions"><button id="discoverCheck" class="primary" disabled>🔎 COMPROBAR</button><button id="discoverReset" class="secondary">↻ LIMPAR</button></div></aside></div>`;
+ const b=document.querySelector('#discoverBoard'),cards=document.querySelector('#discoverCards'),status=document.querySelector('#discoverStatus'),check=document.querySelector('#discoverCheck');let placements={};
+ for(let r=0;r<10;r++)for(let c=0;c<10;c++){const z=discoverZones[r][c],cell=document.createElement('div');cell.className=`cell discover-${z}`;if(r===0||discoverZones[r-1][c]!==z)cell.classList.add('zt');if(r===9||discoverZones[r+1][c]!==z)cell.classList.add('zb');if(c===0||discoverZones[r][c-1]!==z)cell.classList.add('zl');if(c===9||discoverZones[r][c+1]!==z)cell.classList.add('zr');cell.dataset.r=r;cell.dataset.c=c;cell.dataset.zone=z;if(discoverLabels[z]?.[0]===r&&discoverLabels[z]?.[1]===c)cell.innerHTML+=`<span class="zoneLabel discoverZoneLabel">${discoverZoneNames[z]}</span>`;if(discoverObjects[`${r},${c}`])cell.innerHTML+=`<span class="object discoverObject">${discoverObjects[`${r},${c}`]}</span>`;b.appendChild(cell)}
+ const token=p=>{const t=document.createElement('div');t.className='token discoverToken';t.draggable=true;t.dataset.id=p.id;t.innerHTML=`<span>${p.icon}</span><b>${p.name}</b>`;t.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',p.id));t.onclick=(e)=>{e.stopPropagation();if(t.closest('#discoverBoard')){if(placements[p.id]){delete placements[p.id];render();}}else{const card=t.closest('.personCard');if(card)cards.querySelectorAll('.personCard').forEach(x=>x.classList.toggle('selected',x===card&&!card.classList.contains('selected')));}};return t};
+ discoverPeople.forEach(p=>{const card=document.createElement('div');card.className='card personCard';card.dataset.id=p.id;card.innerHTML=`<div class="portrait">${p.icon}</div><div class="cardText"><b>${p.name}</b><small>${p.clue}</small></div>`;card.appendChild(token(p));cards.appendChild(card)});
+ function render(){b.querySelectorAll('.discoverToken').forEach(x=>x.remove());b.querySelectorAll('.cell').forEach(x=>x.classList.remove('excluded'));for(const [id,[r,c]] of Object.entries(placements)){const p=discoverPeople.find(x=>x.id===id),cell=b.querySelector(`[data-r="${r}"][data-c="${c}"]`);cell?.appendChild(token(p))}for(const [id,[r,c]]of Object.entries(placements))b.querySelectorAll('.cell').forEach(cell=>{if(!cell.querySelector('.discoverToken')&&(Number(cell.dataset.r)===r||Number(cell.dataset.c)===c))cell.classList.add('excluded')});state()}
+ function state(){const n=Object.keys(placements).length;check.disabled=n!==10;status.textContent=n<10?`${n}/10 fichas colocadas.`:'As 10 fichas están colocadas. Xa podes comprobar.'}
+ function canPlace(id,r,c){if(discoverObjects[`${r},${c}`])return false;for(const [oid,[rr,cc]]of Object.entries(placements))if(oid!==id&&(rr===r||cc===c))return false;return true}
+ b.querySelectorAll('.cell').forEach(cell=>{cell.addEventListener('dragover',e=>e.preventDefault());cell.addEventListener('drop',e=>{e.preventDefault();const id=e.dataTransfer.getData('text/plain');if(!id)return;const r=+cell.dataset.r,c=+cell.dataset.c;if(canPlace(id,r,c)){placements[id]=[r,c];render()}});cell.addEventListener('click',()=>{const selected=cards.querySelector('.personCard.selected');if(!selected)return;const id=selected.dataset.id,r=+cell.dataset.r,c=+cell.dataset.c;if(canPlace(id,r,c)){placements[id]=[r,c];cards.querySelectorAll('.personCard').forEach(x=>x.classList.remove('selected'));render()}})});
+ cards.querySelectorAll('.personCard').forEach(card=>card.addEventListener('click',e=>{if(e.target.closest('.token'))return;cards.querySelectorAll('.personCard').forEach(x=>x.classList.toggle('selected',x===card&&!card.classList.contains('selected')))}));
+ check.onclick=()=>{let good=0;b.querySelectorAll('.discoverToken').forEach(t=>t.classList.remove('good','bad'));for(const [id,pos]of Object.entries(placements)){const sol=discoverSolution[id],ok=sol&&sol[0]===pos[0]&&sol[1]===pos[1];b.querySelector(`.discoverToken[data-id="${id}"]`)?.classList.add(ok?'good':'bad');if(ok)good++}status.innerHTML=good===10?'🌟 <b>CASO RESOLTO.</b> Aínda queda moito por descubrir.':`${good}/10 posicións correctas. Verde = ben; vermello = revisa.`};
+ document.querySelector('#discoverReset').onclick=()=>renderDiscoverStory();state();
+}
+
 function unlockedIds(){return people.filter(p=>!cards.querySelector(`[data-id="${p.id}"]`).classList.contains('locked')).map(p=>p.id)}
 function updateCheckState(){
  const silviaCard=cards.querySelector('[data-id="silvia"]');
@@ -388,6 +433,8 @@ function renderStoryById(storyId, title){
     renderDecisionStory();
   } else if(storyId==='historia5'){
     renderRemainsStory();
+  } else if(storyId==='historia6'){
+    renderDiscoverStory();
   } else {
     storyContent.classList.add('storyPlaceholder');
     const game=storyContent.querySelector('.game'); if(game) game.style.display='none';
@@ -403,6 +450,7 @@ function showLockedStory(story){
   else if(story.id==='historia3') renderFearStory();
   else if(story.id==='historia4') renderDecisionStory();
   else if(story.id==='historia5') renderRemainsStory();
+  else if(story.id==='historia6') renderDiscoverStory();
   else {
     storyContent.classList.add('storyPlaceholder');
     storyContent.innerHTML=`<section class="comingSoon lockedPreviewDummy"><span>EXPEDIENTE PECHADO</span><h2>${story.label}</h2><p>O contido aparecerá cando chegue o seu día.</p></section>`;
