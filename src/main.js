@@ -291,15 +291,15 @@ function renderDecisionStory(){
 // Historia 5 · O que queda. Os nomes escólleos quen xoga; o puzzle mantén dez roles fixos.
 const remainsRoles=[
  {id:'q1',role:'Persoa 1',icon:'🧑🏻',clue:'Está na primeira fila, onde todo nace.'},
- {id:'q2',role:'Persoa 2',icon:'👩🏼',clue:'Está na parte noroeste do taboleiro.'},
- {id:'q3',role:'Persoa 3',icon:'👨🏽',clue:'Está na terceira fila.'},
- {id:'q4',role:'Persoa 4',icon:'🧑🏾',clue:'Queda 2 filas máis abaixo ca Persoa 2 e está na 4ª fila.'},
+ {id:'q2',role:'Persoa 2',icon:'👩🏼',clue:'Está ao norte dunha bolboreta.'},
+ {id:'q3',role:'Persoa 3',icon:'👨🏽',clue:'Está na terceira fila, nunha esquina da súa zona.'},
+ {id:'q4',role:'Persoa 4',icon:'🧑🏾',clue:'Queda 2 filas máis o sur ca Persoa 2.'},
  {id:'q5',role:'Persoa 5',icon:'👩🏻',clue:'5 - 5.'},
  {id:'q6',role:'Persoa 6',icon:'👨🏼',clue:'Está na primeira columna.'},
  {id:'q7',role:'Persoa 7',icon:'🧑🏽',clue:'Está ao lado dunha cámara.'},
- {id:'q8',role:'Persoa 8',icon:'👩🏾',clue:'Está resgardada.'},
- {id:'q9',role:'Persoa 9',icon:'👨🏻',clue:'Está entre Persoa 8 e Persoa 7 en columnas.'},
- {id:'q10',role:'Persoa 10',icon:'🧑🏼',clue:'Está na última fila.'}
+ {id:'q8',role:'Persoa 8',icon:'👩🏾',clue:'Na súa fila hai un libro e na súa columna, un corazón.'},
+ {id:'q9',role:'Persoa 9',icon:'👨🏻',clue:'Está no medio dos recordos.'},
+ {id:'q10',role:'Persoa 10',icon:'🧑🏼',clue:'Está na última fila, na columna dun corazón.'}
 ];
 const QZ=[
  ['raices','raices','raices','raices','raices','pegada','pegada','pegada','pegada','pegada'],
