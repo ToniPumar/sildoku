@@ -347,7 +347,28 @@ function renderRemainsStory(){
  function qplace(id,r,c){if(!started)return;const p=remainsRoles.find(x=>x.id===id);if(!p)return;for(const [o,[rr,cc]] of Object.entries(qp))if(o!==id&&(rr===r||cc===c))return;const target=qat(r,c);if(target.querySelector('.token')&&target.querySelector('.token').dataset.id!==id)return;qb.querySelectorAll(`.token[data-id="${id}"]`).forEach(t=>t.remove());target.appendChild(qtoken(p));qp[id]=[r,c];qc.querySelector(`[data-id="${id}"]`).classList.remove('selected');qx();qstate()}
  function qstate(){const n=Object.keys(qp).length;qcheck.disabled=n!==10;qs.textContent=n===10?'As 10 persoas están colocadas. Xa podes comprobar.':`${n}/10 persoas colocadas.`}
  qcheck.onclick=()=>{let good=0;qb.querySelectorAll('.token').forEach(t=>{t.classList.remove('good','bad');const a=qp[t.dataset.id],b=remainsSolution[t.dataset.id],ok=b&&a[0]===b[0]&&a[1]===b[1];t.classList.add(ok?'good':'bad');if(ok)good++});qs.innerHTML=good===10?'❤️ <b>CASO RESOLTO.</b> Hai xente que queda de maneiras distintas.':`${good}/10 posicións correctas. Verde = ben; vermello = revisa.`};
- document.querySelector('#qreset').onclick=()=>{if(!started || window.confirm('Queres empezar de novo? Borraranse todos os nomes e a partida actual.'))renderRemainsStory()};
+ document.querySelector('#qreset').onclick=()=>{
+  if(!started){ renderRemainsStory(); return; }
+
+  const borrarNomes=window.confirm('Que queres limpar?\n\nAceptar → borrar os nomes e o taboleiro.\nCancelar → conservar os nomes e escoller se queres limpar só o taboleiro.');
+  if(borrarNomes){ renderRemainsStory(); return; }
+
+  const soTaboleiro=window.confirm('Queres limpar só o taboleiro e conservar os 10 nomes?');
+  if(!soTaboleiro)return;
+
+  // Conservamos os nomes e a partida iniciada, pero devolvemos todas as fichas ás súas tarxetas.
+  remainsRoles.forEach(p=>{
+    qb.querySelectorAll(`.token[data-id=\"${p.id}\"]`).forEach(t=>t.remove());
+    const card=qc.querySelector(`[data-id=\"${p.id}\"]`);
+    card.classList.remove('selected');
+    card.appendChild(qtoken(p));
+  });
+  Object.keys(qp).forEach(id=>delete qp[id]);
+  qb.querySelectorAll('.token').forEach(t=>t.classList.remove('good','bad'));
+  qx();
+  qstate();
+  qs.textContent='Taboleiro limpo. Os 10 nomes mantéñense.';
+};
 }
 
 
