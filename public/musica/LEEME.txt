@@ -1,0 +1,1 @@
+Coloca aqui un arquivo MP3 chamado creditos.mp3. Se non existe, os creditos reproducense sen musica. Comproba que tes licenza para usar a musica.
