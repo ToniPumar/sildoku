@@ -412,7 +412,19 @@ function renderDiscoverStory(){
  function canPlace(id,r,c){if(discoverObjects[`${r},${c}`])return false;for(const [oid,[rr,cc]]of Object.entries(placements))if(oid!==id&&(rr===r||cc===c))return false;return true}
  b.querySelectorAll('.cell').forEach(cell=>{cell.addEventListener('dragover',e=>e.preventDefault());cell.addEventListener('drop',e=>{e.preventDefault();const id=e.dataTransfer.getData('text/plain');if(!id)return;const r=+cell.dataset.r,c=+cell.dataset.c;if(canPlace(id,r,c)){placements[id]=[r,c];render()}});cell.addEventListener('click',()=>{const selected=cards.querySelector('.personCard.selected');if(!selected)return;const id=selected.dataset.id,r=+cell.dataset.r,c=+cell.dataset.c;if(canPlace(id,r,c)){placements[id]=[r,c];cards.querySelectorAll('.personCard').forEach(x=>x.classList.remove('selected'));render()}})});
  cards.querySelectorAll('.personCard').forEach(card=>card.addEventListener('click',e=>{if(e.target.closest('.token'))return;cards.querySelectorAll('.personCard').forEach(x=>x.classList.toggle('selected',x===card&&!card.classList.contains('selected')))}));
- check.onclick=()=>{if(phase===1){let good=0;clearRoomFeedback();for(const room of happyRooms){const ok=roomAssign[room.zone]===room.name;if(ok)good++;const btn=choices.querySelector(`[data-room="${CSS.escape(room.name)}"]`);if(btn)btn.classList.add(ok?'correct':'wrong')}if(good===7){setTimeout(()=>{phase=2;selected=null;status.innerHTML='✓ <b>As 7 habitacións están ben.</b> Agora descubre a quen pertence cada descrición.';renderPhase2()},650)}else status.textContent=`${good}/7 habitacións correctas. Revisa os recadros marcados.`;return}if(phase===2){let good=0;clearClueFeedback();for(const p of happyPeople){const ok=clueAssign[p.id]===p.id;if(ok)good++;const clue=choices.querySelector(`[data-clue="${p.id}"]`);if(clue)clue.classList.add(ok?'correct':'wrong')}if(good===10){setTimeout(()=>{phase=3;selected=null;choices.innerHTML=`<div class="happyFinal"><small>UNHA ÚLTIMA PREGUNTA</small><h2>Onde está a felicidade?</h2><p>Escolle calquera cela do taboleiro.</p></div>`;document.querySelector('#happyLeftTitle').textContent='A FELICIDADE';document.querySelector('#happyHelp').textContent='Todo está xa no seu lugar.';status.innerHTML='As habitacións e as persoas están identificadas. Só queda unha pregunta.';check.disabled=true;board.querySelectorAll('.happyToken').forEach(t=>{t.classList.remove('selectedPerson');t.querySelector('.happyAssigned')?.remove()})},650)}else status.textContent=`${good}/10 descricións correctas. Revisa os recadros marcados.`}};
+ check.onclick=()=>{
+  if(check.disabled)return;
+  let correct=0;
+  b.querySelectorAll('.discoverToken').forEach(t=>t.classList.remove('good','bad'));
+  for(const [id,pos] of Object.entries(placements)){
+   const expected=discoverSolution[id];
+   const ok=!!expected&&expected[0]===pos[0]&&expected[1]===pos[1];
+   const t=b.querySelector(`.discoverToken[data-id="${id}"]`);
+   if(t)t.classList.add(ok?'good':'bad');
+   if(ok)correct++;
+  }
+  status.textContent=correct===10?'🌟 CASO RESOLTO. Todo está no seu lugar.':`${correct}/10 posicións correctas. Verde = ben; vermello = revisa.`;
+ };
  document.querySelector('#discoverReset').onclick=()=>renderDiscoverStory();state();
 }
 
@@ -505,8 +517,8 @@ function renderHappyStory(){
     function updateDown(){const hint=overlay.querySelector('#happyCreditsDown');if(!overlay.classList.contains('happyEpilogueVisible')){hint.hidden=true;return}hint.hidden=overlay.scrollTop+overlay.clientHeight>=overlay.scrollHeight-75}
     function showEpilogue(){window.clearTimeout(creditsTimer);scroll.hidden=true;epilogue.hidden=false;overlay.classList.add('happyEpilogueVisible');overlay.querySelector('#happyCreditsFarewell').hidden=true;overlay.scrollTop=0;window.requestAnimationFrame(updateDown)}
     overlay.addEventListener('scroll',updateDown,{passive:true});
-    overlay.querySelector('#happyCreditsContinue').onclick=()=>{if(playing)fadeTo(0,2600,()=>{music.pause();playing=false;updateMusicButton()});const farewell=overlay.querySelector('#happyCreditsFarewell');farewell.hidden=false;window.requestAnimationFrame(()=>{farewell.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});window.setTimeout(updateDown,600)})};
-    function playCredits(){if(available&&!playing)startMusic();scroll.hidden=false;epilogue.hidden=true;overlay.querySelector('#happyCreditsDown').hidden=true;overlay.classList.remove('happyEpilogueVisible');const roll=scroll.querySelector('.happyCreditsRoll');roll.style.animation='none';void roll.offsetWidth;roll.style.animation='';creditsTimer=window.setTimeout(showEpilogue,34000)}
+    overlay.querySelector('#happyCreditsContinue').onclick=()=>{const farewell=overlay.querySelector('#happyCreditsFarewell');farewell.hidden=false;window.requestAnimationFrame(()=>{farewell.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});window.setTimeout(updateDown,600)})};
+    function playCredits(){scroll.hidden=false;epilogue.hidden=true;overlay.querySelector('#happyCreditsDown').hidden=true;overlay.classList.remove('happyEpilogueVisible');const roll=scroll.querySelector('.happyCreditsRoll');roll.style.animation='none';void roll.offsetWidth;roll.style.animation='';creditsTimer=window.setTimeout(showEpilogue,34000)}
     overlay.querySelector('#happyCreditsSkip').onclick=showEpilogue;
     musicButton.onclick=toggleMusic;
     overlay.querySelector('#happyCreditsReplay').onclick=playCredits;
