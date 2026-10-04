@@ -139,3 +139,29 @@
 .happyClue.lockedClue{opacity:.55;cursor:default;border-style:dashed}
 .happyClue.silviaReveal{margin-top:18px;padding:14px;font-size:11.5px;line-height:1.38;animation:silviaReveal .35s ease-out}
 @keyframes silviaReveal{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Gran final · Sildoku 7 */
+.happyCreditsStart{display:block;margin:18px auto 2px;padding:11px 16px;cursor:pointer}
+.happyBoard .cell.happyLightCell{animation:happyCellLight .7s ease-out var(--happy-delay,0ms) both}
+.happyBoard .cell.happyFirstLight{outline:3px solid #f0c86a;z-index:8}
+@keyframes happyCellLight{from{filter:brightness(1)}to{filter:brightness(1.14);box-shadow:inset 0 0 0 2px #f5d57b66}}
+.happyCreditsOverlay{position:fixed;inset:0;z-index:99999;background:#111018;color:#fff7e9;display:flex;align-items:center;justify-content:center;overflow:auto;text-align:center;padding:65px 18px 24px;font-family:Georgia,serif}
+.happyCreditsControls{position:absolute;top:12px;right:12px;left:12px;display:flex;justify-content:space-between;gap:12px;z-index:3;font-family:system-ui,sans-serif}
+.happyCreditsOverlay button{background:#302b39;color:#fff7e9;border:1px solid #a69aab;border-radius:9px;padding:10px 13px;cursor:pointer;font:600 12px system-ui,sans-serif}
+.happyCreditsOverlay button:hover{background:#50465a}
+.happyCreditsScroll{width:min(100%,640px);height:min(72vh,630px);overflow:hidden;position:relative;mask-image:linear-gradient(transparent,#000 12%,#000 85%,transparent)}
+.happyCreditsRoll{position:absolute;left:0;right:0;top:0;animation:happyRoll 34s linear forwards;padding-bottom:60px}
+.happyCreditsRoll h2{font-size:clamp(32px,7vw,64px);letter-spacing:.18em;margin:5px 0 8px}
+.happyCreditsSub{font-style:italic;color:#c8bdb9;margin-bottom:60px}
+.happyCredit{margin:0 auto 44px;max-width:480px}
+.happyCredit span{font:700 11px system-ui,sans-serif;letter-spacing:.24em;color:#cfb891}
+.happyCredit p{font-size:clamp(15px,2.3vw,20px);line-height:1.5;margin:9px 0}
+@keyframes happyRoll{from{transform:translateY(70vh)}to{transform:translateY(-100%)}}
+.happyCreditsOverlay.happyEpilogueVisible{display:block;overflow-y:auto}
+.happyCreditsEpilogue{max-width:620px;margin:40px auto 35px;animation:happyEpilogueIn .8s ease-out}
+.happyCreditsEpilogue p{font-size:clamp(16px,2.5vw,21px);line-height:1.8;margin:0 0 36px}
+.happyCreditsEpilogue h2{font-size:clamp(23px,4vw,35px);margin:45px 0 22px}
+.happyCreditsButterfly{font-size:38px;margin:40px 0}
+.happyCreditsEndActions{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin:30px auto}
+@keyframes happyEpilogueIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.happyBoard .cell.happyLightCell,.happyCreditsRoll,.happyCreditsEpilogue{animation:none}.happyCreditsRoll{position:relative;transform:none}.happyCreditsScroll{overflow:auto;mask-image:none}}
