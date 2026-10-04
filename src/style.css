@@ -165,3 +165,14 @@
 .happyCreditsEndActions{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin:30px auto}
 @keyframes happyEpilogueIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){.happyBoard .cell.happyLightCell,.happyCreditsRoll,.happyCreditsEpilogue{animation:none}.happyCreditsRoll{position:relative;transform:none}.happyCreditsScroll{overflow:auto;mask-image:none}}
+
+/* Último paso dos créditos: lectura guiada sen revelar a despedida antes de tempo. */
+.happyCreditsNext{padding:8px 0 32px;text-align:center}
+.happyCreditsNext p{font-size:clamp(17px,2.5vw,21px);margin:0 0 20px}
+.happyCreditsNext button{font-size:15px;padding:13px 24px;border-radius:22px}
+.happyCreditsFarewell{scroll-margin-top:90px;padding-top:8px}
+.happyCreditsDown{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:5;pointer-events:none;background:rgba(31,27,41,.94);border:1px solid #8d8195;border-radius:24px;padding:4px 18px 7px;color:#fff7e9;font:24px system-ui,sans-serif;line-height:1.05;animation:happyDownPulse 1.6s ease-in-out infinite}
+.happyCreditsDown span{display:block;font-size:11px;letter-spacing:.03em}
+.happyCreditsDown[hidden],.happyCreditsFarewell[hidden]{display:none!important}
+@keyframes happyDownPulse{50%{transform:translate(-50%,5px)}}
+@media(prefers-reduced-motion:reduce){.happyCreditsDown{animation:none}}
